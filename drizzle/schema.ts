@@ -1,17 +1,16 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import {
+  boolean,
+  decimal,
+  int,
+  mysqlEnum,
+  mysqlTable,
+  text,
+  timestamp,
+  varchar,
+} from "drizzle-orm/mysql-core";
 
-/**
- * Core user table backing auth flow.
- * Extend this file with additional tables as your product grows.
- * Columns use camelCase to match both database fields and generated types.
- */
 export const users = mysqlTable("users", {
-  /**
-   * Surrogate primary key. Auto-incremented numeric value managed by the database.
-   * Use this for relations between tables.
-   */
   id: int("id").autoincrement().primaryKey(),
-  /** Manus OAuth identifier (openId) returned from the OAuth callback. Unique per user. */
   openId: varchar("openId", { length: 64 }).notNull().unique(),
   name: text("name"),
   email: varchar("email", { length: 320 }),
@@ -25,4 +24,108 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-// TODO: Add your tables here
+// News articles
+export const news = mysqlTable("news", {
+  id: int("id").autoincrement().primaryKey(),
+  title: varchar("title", { length: 512 }).notNull(),
+  summary: text("summary"),
+  content: text("content"),
+  sourceUrl: varchar("sourceUrl", { length: 1024 }),
+  sourceName: varchar("sourceName", { length: 256 }),
+  imageUrl: varchar("imageUrl", { length: 1024 }),
+  category: mysqlEnum("category", ["domestic", "international", "research", "policy", "market", "technology"]).default("domestic").notNull(),
+  tags: text("tags"), // JSON array of strings
+  isImportant: boolean("isImportant").default(false).notNull(),
+  publishedAt: timestamp("publishedAt").defaultNow().notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type News = typeof news.$inferSelect;
+export type InsertNews = typeof news.$inferInsert;
+
+// Tender / bidding information
+export const tenders = mysqlTable("tenders", {
+  id: int("id").autoincrement().primaryKey(),
+  title: varchar("title", { length: 512 }).notNull(),
+  description: text("description"),
+  projectType: mysqlEnum("projectType", ["procurement", "construction", "research", "service", "other"]).default("procurement").notNull(),
+  budget: varchar("budget", { length: 256 }),
+  region: varchar("region", { length: 256 }),
+  publisherName: varchar("publisherName", { length: 256 }),
+  contactInfo: text("contactInfo"),
+  sourceUrl: varchar("sourceUrl", { length: 1024 }),
+  sourcePlatform: varchar("sourcePlatform", { length: 256 }),
+  deadline: timestamp("deadline"),
+  isImportant: boolean("isImportant").default(false).notNull(),
+  status: mysqlEnum("status", ["open", "closed", "awarded", "cancelled"]).default("open").notNull(),
+  publishedAt: timestamp("publishedAt").defaultNow().notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Tender = typeof tenders.$inferSelect;
+export type InsertTender = typeof tenders.$inferInsert;
+
+// Manufacturers
+export const manufacturers = mysqlTable("manufacturers", {
+  id: int("id").autoincrement().primaryKey(),
+  name: varchar("name", { length: 256 }).notNull(),
+  nameEn: varchar("nameEn", { length: 256 }),
+  country: varchar("country", { length: 128 }).notNull(),
+  region: varchar("region", { length: 256 }), // province/city for China
+  foundedYear: int("foundedYear"),
+  website: varchar("website", { length: 512 }),
+  logoUrl: varchar("logoUrl", { length: 1024 }),
+  description: text("description"),
+  mainProducts: text("mainProducts"), // JSON array
+  techAchievements: text("techAchievements"), // JSON array of { title, value, date }
+  stockCode: varchar("stockCode", { length: 64 }),
+  stage: mysqlEnum("stage", ["research", "pilot", "mass_production", "listed"]).default("research").notNull(),
+  capacity: varchar("capacity", { length: 256 }), // production capacity
+  latestNews: text("latestNews"),
+  isActive: boolean("isActive").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Manufacturer = typeof manufacturers.$inferSelect;
+export type InsertManufacturer = typeof manufacturers.$inferInsert;
+
+// Efficiency records
+export const efficiencyRecords = mysqlTable("efficiency_records", {
+  id: int("id").autoincrement().primaryKey(),
+  cellType: mysqlEnum("cellType", [
+    "single_junction",
+    "tandem_silicon",
+    "tandem_perovskite",
+    "flexible",
+    "module",
+    "mini_module",
+  ]).notNull(),
+  efficiency: decimal("efficiency", { precision: 5, scale: 2 }).notNull(),
+  area: decimal("area", { precision: 10, scale: 2 }), // cm²
+  institution: varchar("institution", { length: 256 }).notNull(),
+  certifiedBy: varchar("certifiedBy", { length: 256 }),
+  recordDate: timestamp("recordDate").notNull(),
+  sourceUrl: varchar("sourceUrl", { length: 1024 }),
+  notes: text("notes"),
+  isCurrentRecord: boolean("isCurrentRecord").default(false).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type EfficiencyRecord = typeof efficiencyRecords.$inferSelect;
+export type InsertEfficiencyRecord = typeof efficiencyRecords.$inferInsert;
+
+// Scheduled job log
+export const jobLogs = mysqlTable("job_logs", {
+  id: int("id").autoincrement().primaryKey(),
+  jobType: varchar("jobType", { length: 128 }).notNull(),
+  status: mysqlEnum("status", ["running", "success", "failed"]).notNull(),
+  itemsProcessed: int("itemsProcessed").default(0),
+  errorMessage: text("errorMessage"),
+  startedAt: timestamp("startedAt").defaultNow().notNull(),
+  completedAt: timestamp("completedAt"),
+});
+
+export type JobLog = typeof jobLogs.$inferSelect;

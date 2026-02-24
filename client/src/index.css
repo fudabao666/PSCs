@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap');
 
 @custom-variant dark (&:is(.dark *));
 
@@ -43,39 +44,51 @@
 }
 
 :root {
-  --primary: var(--color-blue-700);
-  --primary-foreground: var(--color-blue-50);
-  --sidebar-primary: var(--color-blue-600);
-  --sidebar-primary-foreground: var(--color-blue-50);
-  --chart-1: var(--color-blue-300);
-  --chart-2: var(--color-blue-500);
-  --chart-3: var(--color-blue-600);
-  --chart-4: var(--color-blue-700);
-  --chart-5: var(--color-blue-800);
-  --radius: 0.65rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.235 0.015 65);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.235 0.015 65);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.235 0.015 65);
-  --secondary: oklch(0.98 0.001 286.375);
-  --secondary-foreground: oklch(0.4 0.015 65);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.967 0.001 286.375);
-  --accent-foreground: oklch(0.141 0.005 285.823);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.623 0.214 259.815);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.235 0.015 65);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.623 0.214 259.815);
+  /* Editorial cream palette */
+  --radius: 0.125rem;
+  --background: oklch(97% 0.012 85);
+  --foreground: oklch(12% 0.01 60);
+  --card: oklch(99% 0.008 85);
+  --card-foreground: oklch(12% 0.01 60);
+  --popover: oklch(99% 0.008 85);
+  --popover-foreground: oklch(12% 0.01 60);
+  --primary: oklch(12% 0.01 60);
+  --primary-foreground: oklch(97% 0.012 85);
+  --secondary: oklch(93% 0.018 80);
+  --secondary-foreground: oklch(12% 0.01 60);
+  --muted: oklch(92% 0.014 80);
+  --muted-foreground: oklch(55% 0.012 60);
+  --accent: oklch(93% 0.018 80);
+  --accent-foreground: oklch(12% 0.01 60);
+  --destructive: oklch(45% 0.18 25);
+  --destructive-foreground: oklch(97% 0.012 85);
+  --border: oklch(75% 0.01 60);
+  --input: oklch(75% 0.01 60);
+  --ring: oklch(12% 0.01 60);
+  --chart-1: oklch(12% 0.01 60);
+  --chart-2: oklch(62% 0.12 75);
+  --chart-3: oklch(35% 0.015 60);
+  --chart-4: oklch(45% 0.18 25);
+  --chart-5: oklch(55% 0.012 60);
+  --sidebar: oklch(99% 0.008 85);
+  --sidebar-foreground: oklch(12% 0.01 60);
+  --sidebar-primary: oklch(12% 0.01 60);
+  --sidebar-primary-foreground: oklch(97% 0.012 85);
+  --sidebar-accent: oklch(93% 0.018 80);
+  --sidebar-accent-foreground: oklch(12% 0.01 60);
+  --sidebar-border: oklch(75% 0.01 60);
+  --sidebar-ring: oklch(12% 0.01 60);
+  /* Custom editorial tokens */
+  --ink: oklch(12% 0.01 60);
+  --ink-muted: oklch(35% 0.015 60);
+  --ink-light: oklch(55% 0.012 60);
+  --cream: oklch(97% 0.012 85);
+  --cream-dark: oklch(93% 0.018 80);
+  --accent-gold: oklch(62% 0.12 75);
+  --rule: oklch(75% 0.01 60);
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-serif: 'EB Garamond', Georgia, serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
 }
 
 .dark {
@@ -119,6 +132,14 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
   }
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),
@@ -134,18 +155,41 @@
 }
 
 @layer components {
+  /* Editorial utility classes */
+  .font-display { font-family: var(--font-display); }
+  .font-serif { font-family: var(--font-serif); }
+  .editorial-rule {
+    border-top: 2px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding: 3px 0;
+  }
+  .editorial-rule-thin { border-top: 1px solid var(--rule); }
+  .editorial-rule-thick { border-top: 3px solid var(--ink); }
+  .text-gold { color: var(--accent-gold); }
+  .text-ink-muted { color: var(--ink-muted); }
+  .text-ink-light { color: var(--ink-light); }
+  .category-badge {
+    font-family: var(--font-sans);
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border: 1px solid currentColor;
+  }
+  @keyframes ticker {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .ticker-animate {
+    animation: ticker 30s linear infinite;
+    display: inline-flex;
+    white-space: nowrap;
+  }
+  .ticker-animate:hover { animation-play-state: paused; }
+
   /**
-   * Custom container utility that centers content and adds responsive padding.
-   *
-   * This overrides Tailwind's default container behavior to:
-   * - Auto-center content (mx-auto)
-   * - Add responsive horizontal padding
-   * - Set max-width for large screens
-   *
-   * Usage: <div className="container">...</div>
-   *
-   * For custom widths, use max-w-* utilities directly:
-   * <div className="max-w-6xl mx-auto px-4">...</div>
+   * Custom container utility
    */
   .container {
     width: 100%;
