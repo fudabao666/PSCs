@@ -7,9 +7,14 @@ export default function SiteFooter() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
           {/* Brand */}
           <div className="md:col-span-2">
-            <h2 className="font-display text-2xl font-black text-primary-foreground mb-3">
-              钙钛矿光伏资讯
-            </h2>
+            <div className="flex items-baseline gap-2 mb-3">
+              <h2 className="font-display text-2xl font-black text-primary-foreground">
+                钙钛矿光伏资讯
+              </h2>
+              <span className="font-sans text-[10px] tracking-[0.15em] text-primary-foreground/40 border border-primary-foreground/20 px-1.5 py-0.5 whitespace-nowrap">
+                鹑火FL内刊
+              </span>
+            </div>
             <p className="font-sans text-xs leading-relaxed text-primary-foreground/60 max-w-xs">
               全球钙钛矿光伏行业权威资讯平台，汇聚最新行业动态、招投标信息与企业数据，助力行业发展。
             </p>
@@ -64,7 +69,7 @@ export default function SiteFooter() {
         {/* Bottom rule */}
         <div className="border-t border-primary-foreground/10 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="font-sans text-[10px] text-primary-foreground/40 tracking-wide">
-            © {new Date().getFullYear()} 钙钛矿光伏资讯网 · 数据每日自动更新
+            © 2026 鹑火FL内刊 · 钙钛矿光伏资讯 · 数据每日自动更新
           </p>
           <p className="font-sans text-[10px] text-primary-foreground/30 tracking-wide">
             信息仅供参考，投资决策请结合专业意见
