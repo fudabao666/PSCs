@@ -123,26 +123,23 @@ function DataUpdateTab() {
     onError: (err: { message: string }) => toast.error(`更新失败：${err.message}`),
   });
 
-  const [seedMfgLoading, setSeedMfgLoading] = useState(false);
-  const [seedEffLoading, setSeedEffLoading] = useState(false);
+  const seedManufacturers = trpc.manufacturers.seed.useMutation({
+    onSuccess: (res) => {
+      toast.success(`成功写入 ${res.count} 家全球主要钙钛矿企业数据`);
+      utils.manufacturers.list.invalidate();
+    },
+    onError: (err) => toast.error(`厂家初始化失败：${err.message}`),
+  });
 
-  const handleSeedManufacturers = async () => {
-    setSeedMfgLoading(true);
-    try {
-      toast.info("厂家数据初始化功能将在后续版本提供，请通过管理界面手动添加企业数据");
-    } finally {
-      setSeedMfgLoading(false);
-    }
-  };
-
-  const handleSeedEfficiency = async () => {
-    setSeedEffLoading(true);
-    try {
-      toast.info("效率记录初始化功能将在后续版本提供，请通过管理界面手动添加效率数据");
-    } finally {
-      setSeedEffLoading(false);
-    }
-  };
+  const seedEfficiency = trpc.efficiency.seed.useMutation({
+    onSuccess: (res) => {
+      toast.success(`成功写入 ${res.count} 条权威效率历史记录（NREL等来源）`);
+      utils.efficiency.list.invalidate();
+      utils.efficiency.chartData.invalidate();
+      utils.efficiency.current.invalidate();
+    },
+    onError: (err) => toast.error(`效率数据初始化失败：${err.message}`),
+  });
 
   return (
     <div className="max-w-2xl space-y-8">
@@ -174,14 +171,18 @@ function DataUpdateTab() {
         </h2>
         <div className="bg-muted p-6 space-y-4">
           <p className="font-sans text-sm text-foreground">
-            首次使用时，点击下方按钮初始化厂家数据库和效率记录数据。
+            首次使用时，点击下方按钮写入基础数据。
           </p>
+          <ul className="font-sans text-xs text-ink-muted space-y-1 list-disc list-inside">
+            <li>厂家数据：全球30家主要钙钛矿光伏企业（含官网、成立年份、技术成就），来源：perovskite-info.com、企业官网及行业报告</li>
+            <li>效率数据：NREL权威认证历史记录（2009—2025年），来源：NREL Best Research-Cell Efficiency Chart、Fluxim、Solar Cell Efficiency Tables</li>
+          </ul>
           <div className="flex flex-wrap gap-3">
-            <Button variant="outline" onClick={handleSeedManufacturers} disabled={seedMfgLoading}>
-              {seedMfgLoading ? "初始化中..." : "初始化全球厂家数据"}
+            <Button variant="outline" onClick={() => seedManufacturers.mutate()} disabled={seedManufacturers.isPending}>
+              {seedManufacturers.isPending ? "写入中..." : "写入全球30家厂家数据"}
             </Button>
-            <Button variant="outline" onClick={handleSeedEfficiency} disabled={seedEffLoading}>
-              {seedEffLoading ? "初始化中..." : "初始化效率记录数据"}
+            <Button variant="outline" onClick={() => seedEfficiency.mutate()} disabled={seedEfficiency.isPending}>
+              {seedEfficiency.isPending ? "写入中..." : "写入NREL权威效率历史数据"}
             </Button>
           </div>
         </div>

@@ -52,6 +52,15 @@
 - [x] Efficiency trend chart visualization (in progress)
 - [ ] Multi-language support (CN/EN)
 
+## Sprint 2 - 企业数据库 & 效率数据完善
+- [x] 网络搜集全球30家主要钙钛矿光伏企业准确信息（含官网URL）
+- [x] 从NREL等权威来源获取准确效率历史数据（2009-2025年，5种电池类型）
+- [x] 将30家企业写入数据库seed脚本（server/seedManufacturers.ts）
+- [x] 用NREL权威效率数据写入seed脚本（server/seedEfficiency.ts）
+- [x] 管理后台seed按钮连接到真实tRPC端点
+- [x] 厂家卡片添加官网链接图标
+- [x] 20个测试全部通过
+
 ## Current Sprint
 - [x] Backend: efficiency.chartData API (time-series aggregation by cell type)
 - [x] Frontend: Recharts line chart in EfficiencyPage.tsx

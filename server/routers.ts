@@ -34,6 +34,8 @@ import {
   updateJobLog,
 } from "./db";
 import { fetchLatestNews, fetchLatestTenders } from "./dataFetcher";
+import { manufacturerSeedData } from "./seedManufacturers";
+import { efficiencySeedData } from "./seedEfficiency";
 
 // Admin guard middleware
 const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
@@ -335,6 +337,34 @@ const manufacturersRouter = router({
       await deleteManufacturer(input.id);
       return { success: true };
     }),
+
+  seed: adminProcedure.mutation(async () => {
+    // Seed 30 major global perovskite PV manufacturers
+    // Data sourced from perovskite-info.com, company websites, industry reports
+    const stageMap: Record<string, "research" | "pilot" | "mass_production" | "listed"> = {
+      "量产": "mass_production",
+      "中试": "pilot",
+      "研发": "research",
+    };
+    let count = 0;
+    for (const m of manufacturerSeedData) {
+      await insertManufacturer({
+        name: m.name,
+        nameEn: m.nameEn,
+        country: m.country,
+        region: m.region,
+        foundedYear: m.foundedYear,
+        website: m.website,
+        description: m.description,
+        mainProducts: m.mainProducts,
+        techAchievements: m.techAchievements,
+        stage: stageMap[m.stage] ?? "research",
+        latestNews: m.tags?.join(", "),
+      });
+      count++;
+    }
+    return { success: true, count };
+  }),
 });
 
 // ─── Efficiency Records Router ────────────────────────────────────────────────
@@ -349,7 +379,37 @@ const efficiencyRouter = router({
   chartData: publicProcedure.query(() => getEfficiencyChartData()),
 
   seed: adminProcedure.mutation(async () => {
-    // Seed historical efficiency records for chart demonstration
+    // Seed historical efficiency records from NREL and authoritative sources
+    // Sources: NREL Best Research-Cell Efficiency Chart, Fluxim, Solar Cell Efficiency Tables
+    const cellTypeMap: Record<string, "single_junction" | "tandem_silicon" | "tandem_perovskite" | "flexible" | "module" | "mini_module"> = {
+      "单结钙钛矿": "single_junction",
+      "钙钛矿/硅叠层": "tandem_silicon",
+      "全钙钛矿叠层": "tandem_perovskite",
+      "柔性钙钛矿": "flexible",
+      "钙钛矿组件": "module",
+    };
+    let count = 0;
+    for (const r of efficiencySeedData) {
+      const ct = cellTypeMap[r.cellType];
+      if (!ct) continue;
+      await insertEfficiencyRecord({
+        cellType: ct,
+        efficiency: String(r.efficiency),
+        area: r.area ? String(r.area) : undefined,
+        institution: r.institution,
+        certifiedBy: r.certifiedBy !== "未认证" ? r.certifiedBy : undefined,
+        recordDate: new Date(`${r.year}-07-01`),
+        sourceUrl: undefined,
+        notes: `${r.notes}${r.source ? ` | 来源: ${r.source}` : ""}`,
+        isCurrentRecord: r.isWorldRecord && r.year >= 2024,
+      });
+      count++;
+    }
+    return { success: true, count };
+  }),
+
+  _oldSeed: adminProcedure.mutation(async () => {
+    // Legacy seed kept for reference
     const seedData = [
       // Single junction perovskite
       { cellType: "single_junction" as const, efficiency: "9.7",  institution: "EPFL",           recordDate: new Date("2012-06-01"), isCurrentRecord: false },

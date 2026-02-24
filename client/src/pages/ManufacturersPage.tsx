@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import { Search, Building2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Building2, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
@@ -143,6 +143,20 @@ export default function ManufacturersPage() {
                   )}
                   {mfg.stockCode && (
                     <p className="font-sans text-[10px] text-gold font-semibold mt-1">{mfg.stockCode}</p>
+                  )}
+                  {mfg.website && (
+                    <div className="mt-2 pt-2 border-t border-foreground/8">
+                      <a
+                        href={mfg.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="inline-flex items-center gap-1 font-sans text-[9px] text-ink-light hover:text-foreground transition-colors"
+                      >
+                        <ExternalLink size={9} />
+                        官网
+                      </a>
+                    </div>
                   )}
                 </Link>
               ))}
