@@ -73,3 +73,16 @@
 ## Sprint 4 - 页脚版权声明
 - [x] 页脚底部添加"© 2026 鹑火FL内刊 · 钙钛矿光伏资讯"版权声明
 - [x] 页脚品牌区域同步添加"鹑火FL内刊"标签
+
+## Sprint 5 - 技术前沿板块
+- [x] 数据库Schema：research_papers和patents两张表已迁移
+- [x] 后端API：论文列表、详情、搜索、创建、删除、seed
+- [x] 后端API：专利列表、详情、搜索、创建、删除、seed
+- [x] 前端技术前沿列表页TechPage.tsx（论文+专利切换）
+- [x] 前端论文详情页TechPaperDetail.tsx
+- [x] 前端专利详情页TechPatentDetail.tsx
+- [x] 导航栏添加技术前沿链接
+- [x] 首页添加技术前沿入口板块
+- [x] 管理后台添加技术前沿标签页（论文+专利管理）
+- [x] LLM摘要自动生成（创建论文时可选generateSummary）
+- [x] 20个测试全部通过

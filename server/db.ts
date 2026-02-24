@@ -4,12 +4,16 @@ import {
   type InsertEfficiencyRecord,
   type InsertManufacturer,
   type InsertNews,
+  type InsertPatent,
+  type InsertResearchPaper,
   type InsertTender,
   type InsertUser,
   efficiencyRecords,
   jobLogs,
   manufacturers,
   news,
+  patents,
+  researchPapers,
   tenders,
   users,
 } from "../drizzle/schema";
@@ -320,4 +324,108 @@ export async function getSiteStats() {
     tenderCount: Number(tenderCount[0]?.count ?? 0),
     manufacturerCount: Number(mfgCount[0]?.count ?? 0),
   };
+}
+
+// ─── Research Papers ──────────────────────────────────────────────────────────
+
+export async function getResearchPapers(opts: {
+  limit?: number;
+  offset?: number;
+  researchType?: string;
+  keyword?: string;
+  isHighlight?: boolean;
+} = {}) {
+  const db = await getDb();
+  if (!db) return { items: [], total: 0 };
+  const { limit = 20, offset = 0, researchType, keyword, isHighlight } = opts;
+  const conditions: ReturnType<typeof eq>[] = [];
+  if (researchType && researchType !== "all") conditions.push(eq(researchPapers.researchType, researchType as any));
+  if (isHighlight !== undefined) conditions.push(eq(researchPapers.isHighlight, isHighlight));
+  if (keyword) conditions.push(or(like(researchPapers.title, `%${keyword}%`), like(researchPapers.abstract, `%${keyword}%`), like(researchPapers.summary, `%${keyword}%`)) as any);
+  const where = conditions.length > 0 ? and(...conditions) : undefined;
+  const [items, countResult] = await Promise.all([
+    db.select().from(researchPapers).where(where).orderBy(desc(researchPapers.publishedAt)).limit(limit).offset(offset),
+    db.select({ count: sql<number>`count(*)` }).from(researchPapers).where(where),
+  ]);
+  return { items, total: Number(countResult[0]?.count ?? 0) };
+}
+
+export async function getResearchPaperById(id: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select().from(researchPapers).where(eq(researchPapers.id, id)).limit(1);
+  return result[0] ?? null;
+}
+
+export async function insertResearchPaper(paper: InsertResearchPaper) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.insert(researchPapers).values(paper);
+  return (result as any).insertId as number;
+}
+
+export async function updateResearchPaper(id: number, data: Partial<InsertResearchPaper>) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(researchPapers).set(data).where(eq(researchPapers.id, id));
+}
+
+export async function deleteResearchPaper(id: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db.delete(researchPapers).where(eq(researchPapers.id, id));
+}
+
+// ─── Patents ──────────────────────────────────────────────────────────────────
+
+export async function getPatents(opts: {
+  limit?: number;
+  offset?: number;
+  patentType?: string;
+  country?: string;
+  status?: string;
+  keyword?: string;
+  isHighlight?: boolean;
+} = {}) {
+  const db = await getDb();
+  if (!db) return { items: [], total: 0 };
+  const { limit = 20, offset = 0, patentType, country, status, keyword, isHighlight } = opts;
+  const conditions: ReturnType<typeof eq>[] = [];
+  if (patentType && patentType !== "all") conditions.push(eq(patents.patentType, patentType as any));
+  if (country && country !== "all") conditions.push(eq(patents.country, country));
+  if (status && status !== "all") conditions.push(eq(patents.status, status as any));
+  if (isHighlight !== undefined) conditions.push(eq(patents.isHighlight, isHighlight));
+  if (keyword) conditions.push(or(like(patents.title, `%${keyword}%`), like(patents.abstract, `%${keyword}%`), like(patents.patentNumber, `%${keyword}%`)) as any);
+  const where = conditions.length > 0 ? and(...conditions) : undefined;
+  const [items, countResult] = await Promise.all([
+    db.select().from(patents).where(where).orderBy(desc(patents.publishedAt)).limit(limit).offset(offset),
+    db.select({ count: sql<number>`count(*)` }).from(patents).where(where),
+  ]);
+  return { items, total: Number(countResult[0]?.count ?? 0) };
+}
+
+export async function getPatentById(id: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select().from(patents).where(eq(patents.id, id)).limit(1);
+  return result[0] ?? null;
+}
+
+export async function insertPatent(patent: InsertPatent) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.insert(patents).values(patent);
+  return (result as any).insertId as number;
+}
+
+export async function updatePatent(id: number, data: Partial<InsertPatent>) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(patents).set(data).where(eq(patents.id, id));
+}
+
+export async function deletePatent(id: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db.delete(patents).where(eq(patents.id, id));
 }

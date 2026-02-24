@@ -14,6 +14,9 @@ import ManufacturerDetail from "./pages/ManufacturerDetail";
 import EfficiencyPage from "./pages/EfficiencyPage";
 import SearchPage from "./pages/SearchPage";
 import AdminPage from "./pages/AdminPage";
+import TechPage from "./pages/TechPage";
+import TechPaperDetail from "./pages/TechPaperDetail";
+import TechPatentDetail from "./pages/TechPatentDetail";
 
 function Router() {
   return (
@@ -28,6 +31,9 @@ function Router() {
       <Route path="/efficiency" component={EfficiencyPage} />
       <Route path="/search" component={SearchPage} />
       <Route path="/admin" component={AdminPage} />
+      <Route path="/tech" component={TechPage} />
+      <Route path="/tech/paper/:id" component={TechPaperDetail} />
+      <Route path="/tech/patent/:id" component={TechPatentDetail} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

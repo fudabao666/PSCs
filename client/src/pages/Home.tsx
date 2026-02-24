@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import { ArrowRight, TrendingUp, FileText, Building2, Zap, RefreshCw } from "lucide-react";
+import { ArrowRight, TrendingUp, FileText, Building2, Zap, RefreshCw, FlaskConical, BookOpen, Shield } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
@@ -389,6 +389,83 @@ export default function Home() {
             </div>
 
             <ManufacturersPreview />
+          </div>
+        </section>
+
+        {/* Tech Frontier entry */}
+        <section className="py-10 md:py-14 bg-stone-900">
+          <div className="container">
+            <div className="editorial-rule mb-8" style={{ borderColor: 'rgba(255,255,255,0.15)' }}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <FlaskConical size={12} className="text-amber-400" />
+                  <span className="font-sans text-[10px] tracking-[0.25em] uppercase text-stone-400 font-semibold">
+                    技术前沿
+                  </span>
+                </div>
+                <Link href="/tech" className="font-sans text-[10px] tracking-[0.15em] uppercase text-stone-400 hover:text-stone-100 transition-colors flex items-center gap-1">
+                  进入技术前沿 <ArrowRight size={10} />
+                </Link>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Papers card */}
+              <Link href="/tech?tab=papers">
+                <div className="group border border-stone-700 rounded-lg p-6 hover:border-amber-500 hover:bg-stone-800 transition-all cursor-pointer">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
+                      <BookOpen className="w-5 h-5 text-amber-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-serif text-base font-semibold text-stone-100">研究成果</h3>
+                      <p className="text-stone-500 text-xs">顶级期刊最新论文追踪</p>
+                    </div>
+                  </div>
+                  <p className="text-stone-400 text-sm leading-relaxed mb-4">
+                    汇聚 Nature、Science、Joule 等顶级期刊最新钙钛矿光伏研究成果，包括效率突破、稳定性改进、新材料开发等各类研究方向。
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {["效率突破", "稳定性", "叠层电池", "柔性器件"].map((tag) => (
+                      <span key={tag} className="text-xs px-2 py-0.5 bg-stone-800 text-stone-400 rounded-full border border-stone-700">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="mt-4 flex items-center gap-1 text-amber-400 text-xs group-hover:gap-2 transition-all">
+                    查看研究成果 <ArrowRight size={12} />
+                  </div>
+                </div>
+              </Link>
+
+              {/* Patents card */}
+              <Link href="/tech?tab=patents">
+                <div className="group border border-stone-700 rounded-lg p-6 hover:border-blue-500 hover:bg-stone-800 transition-all cursor-pointer">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                      <Shield className="w-5 h-5 text-blue-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-serif text-base font-semibold text-stone-100">专利信息</h3>
+                      <p className="text-stone-500 text-xs">核心技术专利动态</p>
+                    </div>
+                  </div>
+                  <p className="text-stone-400 text-sm leading-relaxed mb-4">
+                    追踪全球钙钛矿光伏核心技术专利申请与授权动态，涵盖中国、美国、欧洲、日本等主要专利局，包括发明专利、PCT国际专利等。
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {["发明专利", "PCT国际", "已授权", "审查中"].map((tag) => (
+                      <span key={tag} className="text-xs px-2 py-0.5 bg-stone-800 text-stone-400 rounded-full border border-stone-700">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="mt-4 flex items-center gap-1 text-blue-400 text-xs group-hover:gap-2 transition-all">
+                    查看专利信息 <ArrowRight size={12} />
+                  </div>
+                </div>
+              </Link>
+            </div>
           </div>
         </section>
       </main>

@@ -31,6 +31,16 @@ vi.mock("./db", () => ({
   updateJobLog: vi.fn().mockResolvedValue(undefined),
   upsertUser: vi.fn().mockResolvedValue(undefined),
   getUserByOpenId: vi.fn().mockResolvedValue(undefined),
+  getResearchPapers: vi.fn().mockResolvedValue({ items: [], total: 0 }),
+  getResearchPaperById: vi.fn().mockResolvedValue(null),
+  insertResearchPaper: vi.fn().mockResolvedValue(1),
+  updateResearchPaper: vi.fn().mockResolvedValue(undefined),
+  deleteResearchPaper: vi.fn().mockResolvedValue(undefined),
+  getPatents: vi.fn().mockResolvedValue({ items: [], total: 0 }),
+  getPatentById: vi.fn().mockResolvedValue(null),
+  insertPatent: vi.fn().mockResolvedValue(1),
+  updatePatent: vi.fn().mockResolvedValue(undefined),
+  deletePatent: vi.fn().mockResolvedValue(undefined),
 }));
 
 vi.mock("./dataFetcher", () => ({

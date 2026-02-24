@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-type Tab = "news" | "tenders" | "manufacturers" | "data";
+type Tab = "news" | "tenders" | "manufacturers" | "data" | "tech";
 
 export default function AdminPage() {
   const { user, loading, isAuthenticated } = useAuth();
@@ -74,6 +74,7 @@ export default function AdminPage() {
     { id: "news", label: "新闻管理" },
     { id: "tenders", label: "招投标管理" },
     { id: "manufacturers", label: "厂家管理" },
+    { id: "tech", label: "技术前沿" },
   ];
 
   return (
@@ -105,6 +106,7 @@ export default function AdminPage() {
           {activeTab === "news" && <NewsManageTab />}
           {activeTab === "tenders" && <TendersManageTab />}
           {activeTab === "manufacturers" && <ManufacturersManageTab />}
+          {activeTab === "tech" && <TechManageTab />}
         </div>
       </main>
       <SiteFooter />
@@ -185,6 +187,9 @@ function DataUpdateTab() {
               {seedEfficiency.isPending ? "写入中..." : "写入NREL权威效率历史数据"}
             </Button>
           </div>
+          <p className="font-sans text-xs text-ink-muted">
+            技术前沿数据（论文、专利）可在「技术前沿」标签页中手动添加和管理。
+          </p>
         </div>
       </div>
     </div>
@@ -366,6 +371,206 @@ function ManufacturersManageTab() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function TechManageTab() {
+  const utils = trpc.useUtils();
+  const [activeSection, setActiveSection] = useState<"papers" | "patents">("papers");
+
+  // Papers
+  const { data: papersData, isLoading: papersLoading } = trpc.tech.papers.list.useQuery({ limit: 20, offset: 0 });
+  const deletePaper = trpc.tech.papers.delete.useMutation({
+    onSuccess: () => { toast.success("论文删除成功"); utils.tech.papers.list.invalidate(); },
+    onError: (err) => toast.error(`删除失败：${err.message}`),
+  });
+  const addPaper = trpc.tech.papers.create.useMutation({
+    onSuccess: () => { toast.success("论文添加成功"); utils.tech.papers.list.invalidate(); setShowPaperForm(false); },
+    onError: (err) => toast.error(`添加失败：${err.message}`),
+  });
+
+  // Patents
+  const { data: patentsData, isLoading: patentsLoading } = trpc.tech.patents.list.useQuery({ limit: 20, offset: 0 });
+  const deletePatent = trpc.tech.patents.delete.useMutation({
+    onSuccess: () => { toast.success("专利删除成功"); utils.tech.patents.list.invalidate(); },
+    onError: (err) => toast.error(`删除失败：${err.message}`),
+  });
+  const addPatent = trpc.tech.patents.create.useMutation({
+    onSuccess: () => { toast.success("专利添加成功"); utils.tech.patents.list.invalidate(); setShowPatentForm(false); },
+    onError: (err) => toast.error(`添加失败：${err.message}`),
+  });
+
+  // Seed
+  const seedTech = trpc.tech.seed.useMutation({
+    onSuccess: (res: { success: boolean; papersCount: number; patentsCount: number }) => {
+      toast.success(`成功写入 ${res.papersCount} 篇示例论文和 ${res.patentsCount} 条示例专利`);
+      utils.tech.papers.list.invalidate();
+      utils.tech.patents.list.invalidate();
+    },
+    onError: (err: { message: string }) => toast.error(`初始化失败：${err.message}`),
+  });
+
+  // Form state
+  const [showPaperForm, setShowPaperForm] = useState(false);
+  const [paperForm, setPaperForm] = useState<{ title: string; journal: string; doi: string; researchType: "efficiency"|"stability"|"materials"|"fabrication"|"tandem"|"flexible"|"commercialization"|"other"; publishedAt: string; summary: string; sourceUrl: string }>({ title: "", journal: "", doi: "", researchType: "efficiency", publishedAt: new Date().toISOString().split("T")[0], summary: "", sourceUrl: "" });
+  const [showPatentForm, setShowPatentForm] = useState(false);
+  const [patentForm, setPatentForm] = useState<{ title: string; patentNumber: string; country: string; patentType: "invention"|"utility"|"design"|"pct"; status: "pending"|"granted"|"rejected"|"expired"; filedAt: string; summary: string; sourceUrl: string }>({ title: "", patentNumber: "", country: "CN", patentType: "invention", status: "pending", filedAt: new Date().toISOString().split("T")[0], summary: "", sourceUrl: "" });
+
+  return (
+    <div>
+      {/* Section toggle */}
+      <div className="flex gap-0 mb-6 border-b border-foreground/10">
+        {[{ id: "papers" as const, label: "研究论文" }, { id: "patents" as const, label: "专利信息" }].map((s) => (
+          <button key={s.id} onClick={() => setActiveSection(s.id)}
+            className={`font-sans text-xs tracking-[0.12em] uppercase px-4 py-2.5 border-b-2 transition-colors ${activeSection === s.id ? "border-foreground text-foreground font-semibold" : "border-transparent text-ink-muted hover:text-foreground"}`}>
+            {s.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Seed button */}
+      <div className="mb-6 p-4 bg-muted rounded-lg flex items-center justify-between gap-4">
+        <p className="font-sans text-xs text-ink-muted">首次使用可写入示例数据，包含代表性研究论文和专利信息。</p>
+        <Button variant="outline" size="sm" onClick={() => seedTech.mutate()} disabled={seedTech.isPending}>
+          {seedTech.isPending ? "写入中..." : "写入示例技术数据"}
+        </Button>
+      </div>
+
+      {/* Papers section */}
+      {activeSection === "papers" && (
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <p className="font-sans text-sm text-ink-muted">共 {papersData?.total ?? 0} 篇论文</p>
+            <Button size="sm" onClick={() => setShowPaperForm(true)} className="flex items-center gap-1.5">
+              <Plus size={13} /> 添加论文
+            </Button>
+          </div>
+
+          {/* Add paper form */}
+          {showPaperForm && (
+            <div className="mb-6 p-5 border border-foreground/20 bg-muted/50 space-y-3">
+              <h3 className="font-sans text-xs tracking-[0.15em] uppercase text-ink-muted font-semibold">添加研究论文</h3>
+              <Input placeholder="论文标题 *" value={paperForm.title} onChange={(e) => setPaperForm({ ...paperForm, title: e.target.value })} />
+              <div className="grid grid-cols-2 gap-3">
+                <Input placeholder="期刊名称" value={paperForm.journal} onChange={(e) => setPaperForm({ ...paperForm, journal: e.target.value })} />
+                <Input placeholder="DOI" value={paperForm.doi} onChange={(e) => setPaperForm({ ...paperForm, doi: e.target.value })} />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <Select value={paperForm.researchType} onValueChange={(v) => setPaperForm({ ...paperForm, researchType: v as typeof paperForm.researchType })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {[["efficiency","效率突破"],["stability","稳定性"],["materials","材料创新"],["fabrication","制备工艺"],["tandem","叠层电池"],["flexible","柔性器件"],["commercialization","商业化"],["other","其他"]].map(([v,l]) => (
+                      <SelectItem key={v} value={v}>{l}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Input type="date" value={paperForm.publishedAt} onChange={(e) => setPaperForm({ ...paperForm, publishedAt: e.target.value })} />
+              </div>
+              <Textarea placeholder="摘要/AI摘要" value={paperForm.summary} onChange={(e) => setPaperForm({ ...paperForm, summary: e.target.value })} rows={3} />
+              <Input placeholder="原文链接" value={paperForm.sourceUrl} onChange={(e) => setPaperForm({ ...paperForm, sourceUrl: e.target.value })} />
+              <div className="flex gap-2">
+                <Button size="sm" onClick={() => addPaper.mutate({ ...paperForm, publishedAt: new Date(paperForm.publishedAt) })} disabled={addPaper.isPending || !paperForm.title}>
+                  {addPaper.isPending ? "提交中..." : "确认添加"}
+                </Button>
+                <Button size="sm" variant="outline" onClick={() => setShowPaperForm(false)}>取消</Button>
+              </div>
+            </div>
+          )}
+
+          {papersLoading ? (
+            <div className="space-y-2">{Array.from({ length: 5 }).map((_, i) => <div key={i} className="h-12 bg-muted animate-pulse rounded" />)}</div>
+          ) : (
+            <div className="space-y-0">
+              {papersData?.items.map((item, idx) => (
+                <div key={item.id} className={`flex items-center gap-4 py-3.5 ${idx < (papersData?.items.length ?? 0) - 1 ? "border-b border-foreground/10" : ""}`}>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-sans text-sm text-foreground truncate">{item.title}</p>
+                    <p className="font-sans text-[10px] text-ink-light mt-0.5">{item.journal ?? "—"} · {item.researchType} · {new Date(item.publishedAt).toLocaleDateString("zh-CN")}</p>
+                  </div>
+                  <button onClick={() => { if (confirm("确认删除此论文？")) deletePaper.mutate({ id: item.id }); }} className="p-1.5 text-ink-light hover:text-destructive transition-colors flex-shrink-0"><Trash2 size={13} /></button>
+                </div>
+              ))}
+              {papersData?.items.length === 0 && <p className="text-center py-10 text-ink-light text-sm">暂无论文数据</p>}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Patents section */}
+      {activeSection === "patents" && (
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <p className="font-sans text-sm text-ink-muted">共 {patentsData?.total ?? 0} 条专利</p>
+            <Button size="sm" onClick={() => setShowPatentForm(true)} className="flex items-center gap-1.5">
+              <Plus size={13} /> 添加专利
+            </Button>
+          </div>
+
+          {/* Add patent form */}
+          {showPatentForm && (
+            <div className="mb-6 p-5 border border-foreground/20 bg-muted/50 space-y-3">
+              <h3 className="font-sans text-xs tracking-[0.15em] uppercase text-ink-muted font-semibold">添加专利信息</h3>
+              <Input placeholder="专利名称 *" value={patentForm.title} onChange={(e) => setPatentForm({ ...patentForm, title: e.target.value })} />
+              <div className="grid grid-cols-2 gap-3">
+                <Input placeholder="专利号" value={patentForm.patentNumber} onChange={(e) => setPatentForm({ ...patentForm, patentNumber: e.target.value })} />
+                <Select value={patentForm.country} onValueChange={(v) => setPatentForm({ ...patentForm, country: v })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {[["CN","中国"],["US","美国"],["EP","欧洲"],["JP","日本"],["KR","韩国"],["PCT","PCT国际"]].map(([v,l]) => (
+                      <SelectItem key={v} value={v}>{l}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <Select value={patentForm.patentType} onValueChange={(v) => setPatentForm({ ...patentForm, patentType: v as typeof patentForm.patentType })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {[["invention","发明专利"],["utility","实用新型"],["design","外观设计"],["pct","PCT国际"]].map(([v,l]) => (
+                      <SelectItem key={v} value={v}>{l}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={patentForm.status} onValueChange={(v) => setPatentForm({ ...patentForm, status: v as typeof patentForm.status })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {[["pending","审查中"],["granted","已授权"],["rejected","已驳回"],["expired","已失效"]].map(([v,l]) => (
+                      <SelectItem key={v} value={v}>{l}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <Input type="date" placeholder="申请日期" value={patentForm.filedAt} onChange={(e) => setPatentForm({ ...patentForm, filedAt: e.target.value })} />
+              <Textarea placeholder="专利摘要" value={patentForm.summary} onChange={(e) => setPatentForm({ ...patentForm, summary: e.target.value })} rows={3} />
+              <Input placeholder="专利原文链接" value={patentForm.sourceUrl} onChange={(e) => setPatentForm({ ...patentForm, sourceUrl: e.target.value })} />
+              <div className="flex gap-2">
+                <Button size="sm" onClick={() => addPatent.mutate({ ...patentForm, filedAt: new Date(patentForm.filedAt) })} disabled={addPatent.isPending || !patentForm.title}>
+                  {addPatent.isPending ? "提交中..." : "确认添加"}
+                </Button>
+                <Button size="sm" variant="outline" onClick={() => setShowPatentForm(false)}>取消</Button>
+              </div>
+            </div>
+          )}
+
+          {patentsLoading ? (
+            <div className="space-y-2">{Array.from({ length: 5 }).map((_, i) => <div key={i} className="h-12 bg-muted animate-pulse rounded" />)}</div>
+          ) : (
+            <div className="space-y-0">
+              {patentsData?.items.map((item, idx) => (
+                <div key={item.id} className={`flex items-center gap-4 py-3.5 ${idx < (patentsData?.items.length ?? 0) - 1 ? "border-b border-foreground/10" : ""}`}>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-sans text-sm text-foreground truncate">{item.title}</p>
+                    <p className="font-sans text-[10px] text-ink-light mt-0.5">{item.patentNumber ?? "—"} · {item.country} · {item.status}</p>
+                  </div>
+                  <button onClick={() => { if (confirm("确认删除此专利？")) deletePatent.mutate({ id: item.id }); }} className="p-1.5 text-ink-light hover:text-destructive transition-colors flex-shrink-0"><Trash2 size={13} /></button>
+                </div>
+              ))}
+              {patentsData?.items.length === 0 && <p className="text-center py-10 text-ink-light text-sm">暂无专利数据</p>}
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -9,6 +9,7 @@ const navLinks = [
   { href: "/tenders", label: "招投标" },
   { href: "/manufacturers", label: "厂家数据库" },
   { href: "/efficiency", label: "效率记录" },
+  { href: "/tech", label: "技术前沿" },
 ];
 
 export default function SiteHeader() {

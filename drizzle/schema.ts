@@ -117,6 +117,66 @@ export const efficiencyRecords = mysqlTable("efficiency_records", {
 export type EfficiencyRecord = typeof efficiencyRecords.$inferSelect;
 export type InsertEfficiencyRecord = typeof efficiencyRecords.$inferInsert;
 
+// Research papers (技术前沿 - 研究成果)
+export const researchPapers = mysqlTable("research_papers", {
+  id: int("id").autoincrement().primaryKey(),
+  title: varchar("title", { length: 512 }).notNull(),
+  titleEn: varchar("titleEn", { length: 512 }),
+  authors: text("authors"), // JSON array of strings
+  abstract: text("abstract"),
+  summary: text("summary"), // LLM-generated Chinese summary
+  journal: varchar("journal", { length: 256 }),
+  doi: varchar("doi", { length: 256 }),
+  sourceUrl: varchar("sourceUrl", { length: 1024 }),
+  imageUrl: varchar("imageUrl", { length: 1024 }),
+  researchType: mysqlEnum("researchType", [
+    "efficiency",
+    "stability",
+    "materials",
+    "fabrication",
+    "tandem",
+    "flexible",
+    "commercialization",
+    "other",
+  ]).default("other").notNull(),
+  keyFindings: text("keyFindings"), // JSON array of key finding strings
+  institutions: text("institutions"), // JSON array of institution names
+  tags: text("tags"), // JSON array
+  isHighlight: boolean("isHighlight").default(false).notNull(),
+  publishedAt: timestamp("publishedAt").defaultNow().notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ResearchPaper = typeof researchPapers.$inferSelect;
+export type InsertResearchPaper = typeof researchPapers.$inferInsert;
+
+// Patents (专利信息)
+export const patents = mysqlTable("patents", {
+  id: int("id").autoincrement().primaryKey(),
+  title: varchar("title", { length: 512 }).notNull(),
+  titleEn: varchar("titleEn", { length: 512 }),
+  patentNumber: varchar("patentNumber", { length: 128 }),
+  applicants: text("applicants"), // JSON array
+  inventors: text("inventors"), // JSON array
+  abstract: text("abstract"),
+  summary: text("summary"), // LLM-generated summary
+  patentType: mysqlEnum("patentType", ["invention", "utility", "design", "pct"]).default("invention").notNull(),
+  country: varchar("country", { length: 128 }).default("CN").notNull(),
+  status: mysqlEnum("status", ["pending", "granted", "rejected", "expired"]).default("pending").notNull(),
+  ipcCode: varchar("ipcCode", { length: 256 }), // International Patent Classification
+  sourceUrl: varchar("sourceUrl", { length: 1024 }),
+  tags: text("tags"), // JSON array
+  isHighlight: boolean("isHighlight").default(false).notNull(),
+  filedAt: timestamp("filedAt"),
+  publishedAt: timestamp("publishedAt").defaultNow().notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Patent = typeof patents.$inferSelect;
+export type InsertPatent = typeof patents.$inferInsert;
+
 // Scheduled job log
 export const jobLogs = mysqlTable("job_logs", {
   id: int("id").autoincrement().primaryKey(),
