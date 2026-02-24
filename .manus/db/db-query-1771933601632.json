@@ -1,0 +1,130 @@
+{
+  "query": "SELECT id, title, LEFT(sourceUrl, 80) as sourceUrl, sourceName, category, DATE(publishedAt) as date FROM news ORDER BY publishedAt DESC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2PeNkwyuMvMnJzu.7b0b71d99605 --database iJCeZUA92gWwdfEDZsTdj4 --execute SELECT id, title, LEFT(sourceUrl, 80) as sourceUrl, sourceName, category, DATE(publishedAt) as date FROM news ORDER BY publishedAt DESC;",
+  "rows": [
+    {
+      "id": "60001",
+      "title": "协鑫光电钙钛矿组件效率突破27%，刷新世界纪录",
+      "sourceUrl": "NULL",
+      "sourceName": "光伏新闻网",
+      "category": "technology",
+      "date": "2026-02-24"
+    },
+    {
+      "id": "60005",
+      "title": "多家风投机构联合投资钙钛矿设备制造商，助推产能扩张",
+      "sourceUrl": "NULL",
+      "sourceName": "科技创投日报",
+      "category": "market",
+      "date": "2026-02-24"
+    },
+    {
+      "id": "60004",
+      "title": "日本松下与美国初创公司达成钙钛矿电池技术合作",
+      "sourceUrl": "NULL",
+      "sourceName": "国际光伏评论",
+      "category": "international",
+      "date": "2026-02-24"
+    },
+    {
+      "id": "60003",
+      "title": "欧盟出台新政支持钙钛矿产业发展，提供巨额研发补贴",
+      "sourceUrl": "NULL",
+      "sourceName": "欧洲能源时报",
+      "category": "policy",
+      "date": "2026-02-24"
+    },
+    {
+      "id": "60002",
+      "title": "华能集团宣布首个GW级钙钛矿电站并网发电",
+      "sourceUrl": "NULL",
+      "sourceName": "能源观察",
+      "category": "market",
+      "date": "2026-02-24"
+    },
+    {
+      "id": "30005",
+      "title": "国际合作项目启动，聚焦钙钛矿电池长期稳定性研究",
+      "sourceUrl": "NULL",
+      "sourceName": "科技日报",
+      "category": "international",
+      "date": "2026-02-24"
+    },
+    {
+      "id": "30002",
+      "title": "欧洲研究团队实现全钙钛矿叠层电池新效率纪录",
+      "sourceUrl": "NULL",
+      "sourceName": "国际能源新闻",
+      "category": "research",
+      "date": "2026-02-24"
+    },
+    {
+      "id": "30003",
+      "title": "中国政府发布钙钛矿光伏产业发展指导意见",
+      "sourceUrl": "NULL",
+      "sourceName": "国家能源局",
+      "category": "policy",
+      "date": "2026-02-24"
+    },
+    {
+      "id": "30004",
+      "title": "某头部光伏企业宣布投资百亿建设钙钛矿GWh级产线",
+      "sourceUrl": "NULL",
+      "sourceName": "证券日报",
+      "category": "market",
+      "date": "2026-02-24"
+    },
+    {
+      "id": "30001",
+      "title": "某钙钛矿公司宣布大面积组件效率突破20%",
+      "sourceUrl": "NULL",
+      "sourceName": "光伏资讯网",
+      "category": "technology",
+      "date": "2026-02-24"
+    },
+    {
+      "id": "1",
+      "title": "某头部钙钛矿企业宣布钙钛矿叠层电池效率再创新高",
+      "sourceUrl": "NULL",
+      "sourceName": "光伏前沿",
+      "category": "technology",
+      "date": "2026-02-24"
+    },
+    {
+      "id": "5",
+      "title": "钙钛矿组件在青海光伏电站完成首次大规模并网测试",
+      "sourceUrl": "NULL",
+      "sourceName": "北极星太阳能光伏网",
+      "category": "domestic",
+      "date": "2026-02-24"
+    },
+    {
+      "id": "4",
+      "title": "某钙钛矿初创公司完成C轮融资，加速百兆瓦级产线建设",
+      "sourceUrl": "NULL",
+      "sourceName": "投资界",
+      "category": "market",
+      "date": "2026-02-24"
+    },
+    {
+      "id": "3",
+      "title": "欧洲联盟启动大型钙钛矿光伏组件量产示范项目",
+      "sourceUrl": "NULL",
+      "sourceName": "Renewable Energy News",
+      "category": "international",
+      "date": "2026-02-24"
+    },
+    {
+      "id": "2",
+      "title": "国家能源局发布钙钛矿光伏产业发展指导意见",
+      "sourceUrl": "NULL",
+      "sourceName": "中国能源报",
+      "category": "policy",
+      "date": "2026-02-24"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tsourceUrl\tsourceName\tcategory\tdate\n60001\t协鑫光电钙钛矿组件效率突破27%，刷新世界纪录\tNULL\t光伏新闻网\ttechnology\t2026-02-24\n60005\t多家风投机构联合投资钙钛矿设备制造商，助推产能扩张\tNULL\t科技创投日报\tmarket\t2026-02-24\n60004\t日本松下与美国初创公司达成钙钛矿电池技术合作\tNULL\t国际光伏评论\tinternational\t2026-02-24\n60003\t欧盟出台新政支持钙钛矿产业发展，提供巨额研发补贴\tNULL\t欧洲能源时报\tpolicy\t2026-02-24\n60002\t华能集团宣布首个GW级钙钛矿电站并网发电\tNULL\t能源观察\tmarket\t2026-02-24\n30005\t国际合作项目启动，聚焦钙钛矿电池长期稳定性研究\tNULL\t科技日报\tinternational\t2026-02-24\n30002\t欧洲研究团队实现全钙钛矿叠层电池新效率纪录\tNULL\t国际能源新闻\tresearch\t2026-02-24\n30003\t中国政府发布钙钛矿光伏产业发展指导意见\tNULL\t国家能源局\tpolicy\t2026-02-24\n30004\t某头部光伏企业宣布投资百亿建设钙钛矿GWh级产线\tNULL\t证券日报\tmarket\t2026-02-24\n30001\t某钙钛矿公司宣布大面积组件效率突破20%\tNULL\t光伏资讯网\ttechnology\t2026-02-24\n1\t某头部钙钛矿企业宣布钙钛矿叠层电池效率再创新高\tNULL\t光伏前沿\ttechnology\t2026-02-24\n5\t钙钛矿组件在青海光伏电站完成首次大规模并网测试\tNULL\t北极星太阳能光伏网\tdomestic\t2026-02-24\n4\t某钙钛矿初创公司完成C轮融资，加速百兆瓦级产线建设\tNULL\t投资界\tmarket\t2026-02-24\n3\t欧洲联盟启动大型钙钛矿光伏组件量产示范项目\tNULL\tRenewable Energy News\tinternational\t2026-02-24\n2\t国家能源局发布钙钛矿光伏产业发展指导意见\tNULL\t中国能源报\tpolicy\t2026-02-24\n",
+  "stderr": "",
+  "execution_time_ms": 56
+}
