@@ -1,6 +1,10 @@
 import { Link } from "wouter";
+import { getLoginUrl } from "@/const";
+import { useAuth } from "@/_core/hooks/useAuth";
 
 export default function SiteFooter() {
+  const { isAuthenticated, user } = useAuth();
+
   return (
     <footer className="bg-foreground text-primary-foreground mt-16">
       <div className="container py-12">
@@ -68,8 +72,25 @@ export default function SiteFooter() {
 
         {/* Bottom rule */}
         <div className="border-t border-primary-foreground/10 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="font-sans text-[10px] text-primary-foreground/40 tracking-wide">
+          <p className="font-sans text-[10px] text-primary-foreground/40 tracking-wide flex items-center gap-2">
             © 2026 鹑火FL内刊 · 钙钛矿光伏资讯 · 数据每日自动更新
+            {isAuthenticated && user?.role === "admin" ? (
+              <Link
+                href="/admin"
+                className="text-primary-foreground/20 hover:text-primary-foreground/55 transition-colors duration-300 select-none"
+                title="管理后台"
+              >
+                ·
+              </Link>
+            ) : (
+              <a
+                href={getLoginUrl()}
+                className="text-primary-foreground/20 hover:text-primary-foreground/50 transition-colors duration-300 select-none"
+                title=""
+              >
+                ·
+              </a>
+            )}
           </p>
           <p className="font-sans text-[10px] text-primary-foreground/30 tracking-wide">
             信息仅供参考，投资决策请结合专业意见

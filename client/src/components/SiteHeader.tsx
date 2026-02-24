@@ -45,19 +45,10 @@ export default function SiteHeader() {
             </span>
           </div>
           <div className="flex items-center gap-3">
-            {isAuthenticated ? (
-              <>
-                <span className="font-sans text-[10px] text-ink-muted">{user?.name}</span>
-                {user?.role === "admin" && (
-                  <Link href="/admin" className="font-sans text-[10px] tracking-[0.15em] uppercase text-ink-muted hover:text-foreground transition-colors">
-                    管理后台
-                  </Link>
-                )}
-              </>
-            ) : (
-              <a href={getLoginUrl()} className="font-sans text-[10px] tracking-[0.15em] uppercase text-ink-muted hover:text-foreground transition-colors">
-                登录
-              </a>
+            {isAuthenticated && user?.role === "admin" && (
+              <Link href="/admin" className="font-sans text-[10px] tracking-[0.15em] uppercase text-ink-muted hover:text-foreground transition-colors">
+                管理后台
+              </Link>
             )}
           </div>
         </div>
