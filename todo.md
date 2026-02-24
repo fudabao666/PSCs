@@ -86,3 +86,12 @@
 - [x] 管理后台添加技术前沿标签页（论文+专利管理）
 - [x] LLM摘要自动生成（创建论文时可选generateSummary）
 - [x] 20个测试全部通过
+
+## Sprint 6 - 招投标管理后台查询界面
+- [x] 确认tenders表sourceUrl字段存在（已有sourceUrl+sourcePlatform字段）
+- [x] 管理后台招投标Tab：完整列表查询（关键词/状态/类型/地区筛选）
+- [x] 管理后台招投标Tab：来源网站链接直接展示和跳转（ExternalLink图标）
+- [x] 管理后台招投标Tab：支持编辑sourceUrl+sourcePlatform字段（带验证链接）
+- [x] 管理后台招投标Tab：支持新增招投标（含来源链接）
+- [x] 分页功能（20条/页）
+- [x] 20个测试全部通过

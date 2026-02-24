@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import { ArrowLeft, RefreshCw, Plus, Trash2, Edit, CheckCircle, AlertCircle } from "lucide-react";
+import { ArrowLeft, RefreshCw, Plus, Trash2, Edit, CheckCircle, AlertCircle, ExternalLink, Search, X, Save } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getLoginUrl } from "@/const";
@@ -301,40 +301,371 @@ function AddNewsDialog({ open, onClose }: { open: boolean; onClose: () => void }
 
 function TendersManageTab() {
   const utils = trpc.useUtils();
-  const { data, isLoading } = trpc.tenders.list.useQuery({ page: 1, pageSize: 20 });
+
+  // ── Filter state ──────────────────────────────────────────────
+  const [keyword, setKeyword] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
+  const [filterType, setFilterType] = useState("");
+  const [filterRegion, setFilterRegion] = useState("");
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 15;
+
+  const queryParams = {
+    page,
+    pageSize: PAGE_SIZE,
+    keyword: keyword || undefined,
+    status: filterStatus || undefined,
+    projectType: filterType || undefined,
+    region: filterRegion || undefined,
+  };
+  const { data, isLoading } = trpc.tenders.list.useQuery(queryParams);
+
+  // ── Edit dialog state ─────────────────────────────────────────
+  const [editItem, setEditItem] = useState<null | {
+    id: number; title: string; sourceUrl: string; sourcePlatform: string;
+    publisherName: string; region: string; budget: string;
+    status: "open"|"closed"|"awarded"|"cancelled";
+    projectType: "procurement"|"construction"|"research"|"service"|"other";
+    isImportant: boolean;
+  }>(null);
+
+  // ── Add dialog state ──────────────────────────────────────────
+  const [showAdd, setShowAdd] = useState(false);
+  const [addForm, setAddForm] = useState({
+    title: "", description: "", sourceUrl: "", sourcePlatform: "",
+    publisherName: "", region: "", budget: "",
+    projectType: "procurement" as "procurement"|"construction"|"research"|"service"|"other",
+    status: "open" as "open"|"closed"|"awarded"|"cancelled",
+    isImportant: false,
+  });
+
+  // ── Mutations ─────────────────────────────────────────────────
   const deleteTender = trpc.tenders.delete.useMutation({
     onSuccess: () => { toast.success("删除成功"); utils.tenders.list.invalidate(); },
     onError: (err) => toast.error(`删除失败：${err.message}`),
   });
+  const updateTender = trpc.tenders.update.useMutation({
+    onSuccess: () => { toast.success("更新成功"); setEditItem(null); utils.tenders.list.invalidate(); },
+    onError: (err) => toast.error(`更新失败：${err.message}`),
+  });
+  const createTender = trpc.tenders.create.useMutation({
+    onSuccess: () => { toast.success("添加成功"); setShowAdd(false); utils.tenders.list.invalidate(); setAddForm({ title: "", description: "", sourceUrl: "", sourcePlatform: "", publisherName: "", region: "", budget: "", projectType: "procurement", status: "open", isImportant: false }); },
+    onError: (err) => toast.error(`添加失败：${err.message}`),
+  });
+
+  const totalPages = Math.ceil((data?.total ?? 0) / PAGE_SIZE);
+
+  const statusLabel: Record<string, string> = { open: "招标中", closed: "已截止", awarded: "已中标", cancelled: "已取消" };
+  const statusColor: Record<string, string> = { open: "text-emerald-700 bg-emerald-50", closed: "text-gray-500 bg-gray-100", awarded: "text-blue-700 bg-blue-50", cancelled: "text-red-600 bg-red-50" };
+  const typeLabel: Record<string, string> = { procurement: "采购", construction: "建设", research: "研究", service: "服务", other: "其他" };
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <p className="font-sans text-sm text-ink-muted">共 {data?.total ?? 0} 条招投标信息</p>
-        <Button size="sm" onClick={() => toast.info("添加招投标功能即将推出")} className="flex items-center gap-1.5">
+    <div className="space-y-5">
+      {/* ── Header ── */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="font-serif text-base font-semibold text-foreground">招投标信息管理</h3>
+          <p className="font-sans text-xs text-ink-muted mt-0.5">共 <span className="font-semibold text-foreground">{data?.total ?? 0}</span> 条，含来源网站链接</p>
+        </div>
+        <Button size="sm" onClick={() => setShowAdd(true)} className="flex items-center gap-1.5">
           <Plus size={13} /> 添加招投标
         </Button>
       </div>
+
+      {/* ── Filter bar ── */}
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
+        <div className="relative col-span-2 md:col-span-1">
+          <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted" />
+          <Input
+            className="pl-8 h-8 text-xs"
+            placeholder="搜索标题/发布方/地区…"
+            value={keyword}
+            onChange={(e) => { setKeyword(e.target.value); setPage(1); }}
+          />
+          {keyword && <button onClick={() => { setKeyword(""); setPage(1); }} className="absolute right-2 top-1/2 -translate-y-1/2 text-ink-muted hover:text-foreground"><X size={11} /></button>}
+        </div>
+        <Select value={filterStatus || "all"} onValueChange={(v) => { setFilterStatus(v === "all" ? "" : v); setPage(1); }}>
+          <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="状态" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">全部状态</SelectItem>
+            <SelectItem value="open">招标中</SelectItem>
+            <SelectItem value="closed">已截止</SelectItem>
+            <SelectItem value="awarded">已中标</SelectItem>
+            <SelectItem value="cancelled">已取消</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={filterType || "all"} onValueChange={(v) => { setFilterType(v === "all" ? "" : v); setPage(1); }}>
+          <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="类型" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">全部类型</SelectItem>
+            <SelectItem value="procurement">采购</SelectItem>
+            <SelectItem value="construction">建设</SelectItem>
+            <SelectItem value="research">研究</SelectItem>
+            <SelectItem value="service">服务</SelectItem>
+            <SelectItem value="other">其他</SelectItem>
+          </SelectContent>
+        </Select>
+        <Input className="h-8 text-xs" placeholder="地区筛选…" value={filterRegion} onChange={(e) => { setFilterRegion(e.target.value); setPage(1); }} />
+      </div>
+
+      {/* ── Table ── */}
       {isLoading ? (
-        <div className="space-y-2">{Array.from({ length: 5 }).map((_, i) => <div key={i} className="h-12 bg-muted animate-pulse rounded" />)}</div>
+        <div className="space-y-2">{Array.from({ length: 6 }).map((_, i) => <div key={i} className="h-14 bg-muted animate-pulse rounded" />)}</div>
+      ) : data?.items.length === 0 ? (
+        <div className="py-16 text-center">
+          <p className="font-sans text-sm text-ink-muted">暂无符合条件的招投标信息</p>
+          <p className="font-sans text-xs text-ink-light mt-1">尝试调整筛选条件，或在「数据更新」中触发自动抓取</p>
+        </div>
       ) : (
-        <div className="space-y-0">
+        <div className="border border-foreground/10 overflow-hidden">
+          {/* Table header */}
+          <div className="grid grid-cols-[1fr_80px_80px_120px_100px_80px] gap-3 px-4 py-2.5 bg-muted/60 border-b border-foreground/10">
+            <span className="font-sans text-[10px] tracking-[0.12em] uppercase text-ink-muted font-semibold">标题 / 发布方</span>
+            <span className="font-sans text-[10px] tracking-[0.12em] uppercase text-ink-muted font-semibold">类型</span>
+            <span className="font-sans text-[10px] tracking-[0.12em] uppercase text-ink-muted font-semibold">状态</span>
+            <span className="font-sans text-[10px] tracking-[0.12em] uppercase text-ink-muted font-semibold">来源平台</span>
+            <span className="font-sans text-[10px] tracking-[0.12em] uppercase text-ink-muted font-semibold">截止日期</span>
+            <span className="font-sans text-[10px] tracking-[0.12em] uppercase text-ink-muted font-semibold text-right">操作</span>
+          </div>
+          {/* Table rows */}
           {data?.items.map((item, idx) => (
-            <div key={item.id} className={`flex items-center gap-4 py-3.5 ${idx < (data?.items.length ?? 0) - 1 ? "border-b border-foreground/10" : ""}`}>
-              <div className="flex-1 min-w-0">
-                <p className="font-sans text-sm text-foreground line-clamp-1">{item.title}</p>
-                <p className="font-sans text-[10px] text-ink-light mt-0.5">
-                  {item.publisherName} · {item.region} · {format(new Date(item.publishedAt), "yyyy-MM-dd")}
+            <div key={item.id} className={`grid grid-cols-[1fr_80px_80px_120px_100px_80px] gap-3 px-4 py-3.5 items-center hover:bg-muted/30 transition-colors ${idx < data.items.length - 1 ? "border-b border-foreground/8" : ""}`}>
+              {/* Title + publisher */}
+              <div className="min-w-0">
+                <div className="flex items-start gap-1.5">
+                  {item.isImportant && <span className="mt-0.5 flex-shrink-0 w-1.5 h-1.5 rounded-full bg-amber-500" title="重要" />}
+                  <p className="font-sans text-sm text-foreground line-clamp-1 leading-snug">{item.title}</p>
+                </div>
+                <p className="font-sans text-[10px] text-ink-light mt-0.5 truncate">
+                  {item.publisherName || "—"}{item.region ? ` · ${item.region}` : ""}
+                  {item.budget ? ` · ${item.budget}` : ""}
                 </p>
               </div>
-              <div className="flex items-center gap-2 flex-shrink-0">
-                <button onClick={() => toast.info("编辑功能即将推出")} className="p-1.5 text-ink-light hover:text-foreground transition-colors"><Edit size={13} /></button>
-                <button onClick={() => { if (confirm("确认删除？")) deleteTender.mutate({ id: item.id }); }} className="p-1.5 text-ink-light hover:text-destructive transition-colors"><Trash2 size={13} /></button>
+              {/* Type */}
+              <span className="font-sans text-xs text-ink-muted">{typeLabel[item.projectType] ?? item.projectType}</span>
+              {/* Status badge */}
+              <span className={`font-sans text-[10px] font-semibold px-2 py-0.5 rounded-full w-fit ${statusColor[item.status] ?? ""}`}>
+                {statusLabel[item.status] ?? item.status}
+              </span>
+              {/* Source platform + link */}
+              <div className="flex items-center gap-1.5 min-w-0">
+                {item.sourceUrl ? (
+                  <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer"
+                    className="flex items-center gap-1 font-sans text-xs text-blue-700 hover:text-blue-900 transition-colors truncate max-w-[100px]"
+                    title={item.sourceUrl}>
+                    <ExternalLink size={10} className="flex-shrink-0" />
+                    <span className="truncate">{item.sourcePlatform || new URL(item.sourceUrl).hostname.replace("www.","")}</span>
+                  </a>
+                ) : (
+                  <span className="font-sans text-xs text-ink-light">{item.sourcePlatform || "—"}</span>
+                )}
+              </div>
+              {/* Deadline */}
+              <span className="font-sans text-xs text-ink-muted">
+                {item.deadline ? format(new Date(item.deadline), "MM-dd") : "—"}
+              </span>
+              {/* Actions */}
+              <div className="flex items-center gap-1 justify-end">
+                <button
+                  onClick={() => setEditItem({
+                    id: item.id,
+                    title: item.title,
+                    sourceUrl: item.sourceUrl ?? "",
+                    sourcePlatform: item.sourcePlatform ?? "",
+                    publisherName: item.publisherName ?? "",
+                    region: item.region ?? "",
+                    budget: item.budget ?? "",
+                    status: item.status as "open"|"closed"|"awarded"|"cancelled",
+                    projectType: item.projectType as "procurement"|"construction"|"research"|"service"|"other",
+                    isImportant: item.isImportant,
+                  })}
+                  className="p-1.5 text-ink-light hover:text-foreground transition-colors" title="编辑">
+                  <Edit size={12} />
+                </button>
+                <button
+                  onClick={() => { if (confirm(`确认删除「${item.title}」？`)) deleteTender.mutate({ id: item.id }); }}
+                  className="p-1.5 text-ink-light hover:text-destructive transition-colors" title="删除">
+                  <Trash2 size={12} />
+                </button>
               </div>
             </div>
           ))}
         </div>
       )}
+
+      {/* ── Pagination ── */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between pt-2">
+          <p className="font-sans text-xs text-ink-muted">第 {page} / {totalPages} 页</p>
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>上一页</Button>
+            <Button size="sm" variant="outline" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>下一页</Button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Edit Dialog ── */}
+      <Dialog open={!!editItem} onOpenChange={(o) => { if (!o) setEditItem(null); }}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="font-serif text-base">编辑招投标信息</DialogTitle>
+          </DialogHeader>
+          {editItem && (
+            <div className="space-y-3 py-2">
+              <div>
+                <label className="font-sans text-xs text-ink-muted mb-1 block">标题</label>
+                <Input value={editItem.title} onChange={(e) => setEditItem({ ...editItem, title: e.target.value })} />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="font-sans text-xs text-ink-muted mb-1 block">发布方</label>
+                  <Input value={editItem.publisherName} onChange={(e) => setEditItem({ ...editItem, publisherName: e.target.value })} />
+                </div>
+                <div>
+                  <label className="font-sans text-xs text-ink-muted mb-1 block">地区</label>
+                  <Input value={editItem.region} onChange={(e) => setEditItem({ ...editItem, region: e.target.value })} />
+                </div>
+              </div>
+              <div>
+                <label className="font-sans text-xs text-ink-muted mb-1 block">预算金额</label>
+                <Input value={editItem.budget} onChange={(e) => setEditItem({ ...editItem, budget: e.target.value })} placeholder="如：500万元" />
+              </div>
+              <div>
+                <label className="font-sans text-xs text-ink-muted mb-1 block font-semibold text-foreground">来源网站链接 <span className="text-blue-600">(sourceUrl)</span></label>
+                <Input
+                  value={editItem.sourceUrl}
+                  onChange={(e) => setEditItem({ ...editItem, sourceUrl: e.target.value })}
+                  placeholder="https://..."
+                  className="font-mono text-xs"
+                />
+                {editItem.sourceUrl && (
+                  <a href={editItem.sourceUrl} target="_blank" rel="noopener noreferrer"
+                    className="mt-1 flex items-center gap-1 font-sans text-xs text-blue-600 hover:underline">
+                    <ExternalLink size={10} /> 验证链接是否有效
+                  </a>
+                )}
+              </div>
+              <div>
+                <label className="font-sans text-xs text-ink-muted mb-1 block">来源平台名称</label>
+                <Input
+                  value={editItem.sourcePlatform}
+                  onChange={(e) => setEditItem({ ...editItem, sourcePlatform: e.target.value })}
+                  placeholder="如：中国招标网、全国公共资源交易平台"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="font-sans text-xs text-ink-muted mb-1 block">项目类型</label>
+                  <Select value={editItem.projectType} onValueChange={(v) => setEditItem({ ...editItem, projectType: v as typeof editItem.projectType })}>
+                    <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {(["procurement","construction","research","service","other"] as const).map(v => (
+                        <SelectItem key={v} value={v}>{typeLabel[v]}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="font-sans text-xs text-ink-muted mb-1 block">状态</label>
+                  <Select value={editItem.status} onValueChange={(v) => setEditItem({ ...editItem, status: v as typeof editItem.status })}>
+                    <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {(["open","closed","awarded","cancelled"] as const).map(v => (
+                        <SelectItem key={v} value={v}>{statusLabel[v]}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <input type="checkbox" id="isImportant" checked={editItem.isImportant} onChange={(e) => setEditItem({ ...editItem, isImportant: e.target.checked })} className="w-3.5 h-3.5" />
+                <label htmlFor="isImportant" className="font-sans text-xs text-ink-muted cursor-pointer">标记为重要信息（将触发管理员通知）</label>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" size="sm" onClick={() => setEditItem(null)}>取消</Button>
+            <Button size="sm" disabled={updateTender.isPending} onClick={() => editItem && updateTender.mutate({
+              id: editItem.id,
+              title: editItem.title,
+              sourceUrl: editItem.sourceUrl || undefined,
+              sourcePlatform: editItem.sourcePlatform || undefined,
+              publisherName: editItem.publisherName || undefined,
+              region: editItem.region || undefined,
+              budget: editItem.budget || undefined,
+              status: editItem.status,
+              projectType: editItem.projectType,
+              isImportant: editItem.isImportant,
+            })} className="flex items-center gap-1.5">
+              <Save size={12} /> {updateTender.isPending ? "保存中..." : "保存更改"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── Add Dialog ── */}
+      <Dialog open={showAdd} onOpenChange={(o) => { if (!o) setShowAdd(false); }}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="font-serif text-base">添加招投标信息</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 py-2">
+            <div>
+              <label className="font-sans text-xs text-ink-muted mb-1 block">标题 *</label>
+              <Input value={addForm.title} onChange={(e) => setAddForm({ ...addForm, title: e.target.value })} placeholder="招投标项目名称" />
+            </div>
+            <div>
+              <label className="font-sans text-xs text-ink-muted mb-1 block">项目描述</label>
+              <Textarea value={addForm.description} onChange={(e) => setAddForm({ ...addForm, description: e.target.value })} rows={2} placeholder="简要描述项目内容" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="font-sans text-xs text-ink-muted mb-1 block">发布方</label>
+                <Input value={addForm.publisherName} onChange={(e) => setAddForm({ ...addForm, publisherName: e.target.value })} />
+              </div>
+              <div>
+                <label className="font-sans text-xs text-ink-muted mb-1 block">地区</label>
+                <Input value={addForm.region} onChange={(e) => setAddForm({ ...addForm, region: e.target.value })} placeholder="如：广东省" />
+              </div>
+            </div>
+            <div>
+              <label className="font-sans text-xs text-ink-muted mb-1 block font-semibold text-foreground">来源网站链接 <span className="text-blue-600">(sourceUrl)</span></label>
+              <Input value={addForm.sourceUrl} onChange={(e) => setAddForm({ ...addForm, sourceUrl: e.target.value })} placeholder="https://..." className="font-mono text-xs" />
+            </div>
+            <div>
+              <label className="font-sans text-xs text-ink-muted mb-1 block">来源平台名称</label>
+              <Input value={addForm.sourcePlatform} onChange={(e) => setAddForm({ ...addForm, sourcePlatform: e.target.value })} placeholder="如：中国招标网" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="font-sans text-xs text-ink-muted mb-1 block">预算</label>
+                <Input value={addForm.budget} onChange={(e) => setAddForm({ ...addForm, budget: e.target.value })} placeholder="如：500万元" />
+              </div>
+              <div>
+                <label className="font-sans text-xs text-ink-muted mb-1 block">项目类型</label>
+                <Select value={addForm.projectType} onValueChange={(v) => setAddForm({ ...addForm, projectType: v as typeof addForm.projectType })}>
+                  <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {(["procurement","construction","research","service","other"] as const).map(v => (
+                      <SelectItem key={v} value={v}>{typeLabel[v]}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <input type="checkbox" id="addImportant" checked={addForm.isImportant} onChange={(e) => setAddForm({ ...addForm, isImportant: e.target.checked })} className="w-3.5 h-3.5" />
+              <label htmlFor="addImportant" className="font-sans text-xs text-ink-muted cursor-pointer">标记为重要信息</label>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" size="sm" onClick={() => setShowAdd(false)}>取消</Button>
+            <Button size="sm" disabled={createTender.isPending || !addForm.title} onClick={() => createTender.mutate(addForm)} className="flex items-center gap-1.5">
+              <Plus size={12} /> {createTender.isPending ? "添加中..." : "确认添加"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
