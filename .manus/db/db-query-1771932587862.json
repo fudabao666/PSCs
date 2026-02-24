@@ -1,0 +1,82 @@
+{
+  "query": "SELECT id, title, publisherName, region, sourceUrl, sourcePlatform FROM tenders ORDER BY id ASC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2PeNkwyuMvMnJzu.7b0b71d99605 --database iJCeZUA92gWwdfEDZsTdj4 --execute SELECT id, title, publisherName, region, sourceUrl, sourcePlatform FROM tenders ORDER BY id ASC;",
+  "rows": [
+    {
+      "id": "1",
+      "title": "钙钛矿叠层电池中试线关键设备采购项目",
+      "publisherName": "中科院南京先进光伏技术研究院",
+      "region": "江苏省南京市",
+      "sourceUrl": "NULL",
+      "sourcePlatform": "NULL"
+    },
+    {
+      "id": "2",
+      "title": "10MW钙钛矿光伏电站示范项目EPC总承包",
+      "publisherName": "安徽省能源投资集团有限公司",
+      "region": "安徽省合肥市",
+      "sourceUrl": "NULL",
+      "sourcePlatform": "NULL"
+    },
+    {
+      "id": "3",
+      "title": "新型钙钛矿材料稳定性及效率提升联合研发项目",
+      "publisherName": "晶科能源股份有限公司",
+      "region": "广东省深圳市",
+      "sourceUrl": "NULL",
+      "sourcePlatform": "NULL"
+    },
+    {
+      "id": "30001",
+      "title": "钙钛矿光伏组件生产线核心设备采购项目",
+      "publisherName": "中科新能（江苏）光伏科技有限公司",
+      "region": "江苏省",
+      "sourceUrl": "NULL",
+      "sourcePlatform": "NULL"
+    },
+    {
+      "id": "30002",
+      "title": "百兆瓦级钙钛矿叠层电池示范项目EPC总承包",
+      "publisherName": "国家能源集团新能源研究院",
+      "region": "安徽省",
+      "sourceUrl": "NULL",
+      "sourcePlatform": "NULL"
+    },
+    {
+      "id": "30003",
+      "title": "钙钛矿电池长寿命封装材料研发合作项目",
+      "publisherName": "上海晶科能源有限公司",
+      "region": "上海市",
+      "sourceUrl": "NULL",
+      "sourcePlatform": "NULL"
+    },
+    {
+      "id": "60001",
+      "title": "钙钛矿光伏组件生产线核心设备采购项目",
+      "publisherName": "晶能光伏科技有限公司",
+      "region": "江苏省苏州市",
+      "sourceUrl": "NULL",
+      "sourcePlatform": "NULL"
+    },
+    {
+      "id": "60002",
+      "title": "GW级钙钛矿光伏电站EPC总承包工程",
+      "publisherName": "国家能源投资集团",
+      "region": "青海省海西州",
+      "sourceUrl": "NULL",
+      "sourcePlatform": "NULL"
+    },
+    {
+      "id": "60003",
+      "title": "新型钙钛矿材料与器件研发合作项目",
+      "publisherName": "华南先进光电研究院",
+      "region": "广东省深圳市",
+      "sourceUrl": "NULL",
+      "sourcePlatform": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tpublisherName\tregion\tsourceUrl\tsourcePlatform\n1\t钙钛矿叠层电池中试线关键设备采购项目\t中科院南京先进光伏技术研究院\t江苏省南京市\tNULL\tNULL\n2\t10MW钙钛矿光伏电站示范项目EPC总承包\t安徽省能源投资集团有限公司\t安徽省合肥市\tNULL\tNULL\n3\t新型钙钛矿材料稳定性及效率提升联合研发项目\t晶科能源股份有限公司\t广东省深圳市\tNULL\tNULL\n30001\t钙钛矿光伏组件生产线核心设备采购项目\t中科新能（江苏）光伏科技有限公司\t江苏省\tNULL\tNULL\n30002\t百兆瓦级钙钛矿叠层电池示范项目EPC总承包\t国家能源集团新能源研究院\t安徽省\tNULL\tNULL\n30003\t钙钛矿电池长寿命封装材料研发合作项目\t上海晶科能源有限公司\t上海市\tNULL\tNULL\n60001\t钙钛矿光伏组件生产线核心设备采购项目\t晶能光伏科技有限公司\t江苏省苏州市\tNULL\tNULL\n60002\tGW级钙钛矿光伏电站EPC总承包工程\t国家能源投资集团\t青海省海西州\tNULL\tNULL\n60003\t新型钙钛矿材料与器件研发合作项目\t华南先进光电研究院\t广东省深圳市\tNULL\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 74
+}

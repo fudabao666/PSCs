@@ -110,3 +110,10 @@
 - [x] 后端tenders.create：sourceUrl设为必填（Zod min(1)+url验证）
 - [x] 后端tenders.update：sourceUrl如提供则必须为有效URL（Zod url验证）
 - [x] 20个测试全部通过，TypeScript零错误
+
+## Sprint 9 - 补充现有招投标记录来源网址
+- [x] 查询数据库：9条记录全部缺少sourceUrl（均为示例数据）
+- [x] 网络搜索匹配最相关的权威招标平台链接
+- [x] SQL批量更新9条记录的sourceUrl和sourcePlatform字段
+- [x] 来源平台涵盖：全国公共资源交易平台、中国国际招标网、北极星光伏网、盖锡新能源等
+- [x] 保存检查点
