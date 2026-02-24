@@ -1,0 +1,37 @@
+{
+  "query": "SELECT table_name FROM information_schema.tables WHERE table_schema = DATABASE();",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2PeNkwyuMvMnJzu.7b0b71d99605 --database iJCeZUA92gWwdfEDZsTdj4 --execute SELECT table_name FROM information_schema.tables WHERE table_schema = DATABASE();",
+  "rows": [
+    {
+      "table_name": "users"
+    },
+    {
+      "table_name": "tenders"
+    },
+    {
+      "table_name": "research_papers"
+    },
+    {
+      "table_name": "patents"
+    },
+    {
+      "table_name": "news"
+    },
+    {
+      "table_name": "manufacturers"
+    },
+    {
+      "table_name": "job_logs"
+    },
+    {
+      "table_name": "efficiency_records"
+    },
+    {
+      "table_name": "__drizzle_migrations"
+    }
+  ],
+  "messages": [],
+  "stdout": "table_name\nusers\ntenders\nresearch_papers\npatents\nnews\nmanufacturers\njob_logs\nefficiency_records\n__drizzle_migrations\n",
+  "stderr": "",
+  "execution_time_ms": 54
+}

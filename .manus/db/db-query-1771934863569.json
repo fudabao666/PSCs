@@ -1,0 +1,150 @@
+{
+  "query": "SELECT id, name, isPinned, sortOrder, stage FROM manufacturers ORDER BY sortOrder, id LIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2PeNkwyuMvMnJzu.7b0b71d99605 --database iJCeZUA92gWwdfEDZsTdj4 --execute SELECT id, name, isPinned, sortOrder, stage FROM manufacturers ORDER BY sortOrder, id LIMIT 20;",
+  "rows": [
+    {
+      "id": "1",
+      "name": "协鑫光电 (GCL Perovskite)",
+      "isPinned": "0",
+      "sortOrder": "999",
+      "stage": "mass_production"
+    },
+    {
+      "id": "2",
+      "name": "纤纳光电 (Microquanta Semiconductor)",
+      "isPinned": "0",
+      "sortOrder": "999",
+      "stage": "mass_production"
+    },
+    {
+      "id": "3",
+      "name": "极电光能 (Jike Energy)",
+      "isPinned": "0",
+      "sortOrder": "999",
+      "stage": "mass_production"
+    },
+    {
+      "id": "4",
+      "name": "仁烁光能 (Renshine Solar)",
+      "isPinned": "0",
+      "sortOrder": "999",
+      "stage": "pilot"
+    },
+    {
+      "id": "5",
+      "name": "黑晶光电",
+      "isPinned": "0",
+      "sortOrder": "999",
+      "stage": "pilot"
+    },
+    {
+      "id": "6",
+      "name": "曜能光电 (Yaoneng Technology)",
+      "isPinned": "0",
+      "sortOrder": "999",
+      "stage": "pilot"
+    },
+    {
+      "id": "7",
+      "name": "北京曜能 (Beijing Yaoneng)",
+      "isPinned": "0",
+      "sortOrder": "999",
+      "stage": "research"
+    },
+    {
+      "id": "8",
+      "name": "隆基绿能 (LONGi Green Energy)",
+      "isPinned": "0",
+      "sortOrder": "999",
+      "stage": "mass_production"
+    },
+    {
+      "id": "9",
+      "name": "天合光能 (Trina Solar)",
+      "isPinned": "0",
+      "sortOrder": "999",
+      "stage": "research"
+    },
+    {
+      "id": "10",
+      "name": "晶科能源 (JinkoSolar)",
+      "isPinned": "0",
+      "sortOrder": "999",
+      "stage": "research"
+    },
+    {
+      "id": "11",
+      "name": "Oxford PV",
+      "isPinned": "0",
+      "sortOrder": "999",
+      "stage": "mass_production"
+    },
+    {
+      "id": "12",
+      "name": "Saule Technologies",
+      "isPinned": "0",
+      "sortOrder": "999",
+      "stage": "mass_production"
+    },
+    {
+      "id": "13",
+      "name": "Solaronix",
+      "isPinned": "0",
+      "sortOrder": "999",
+      "stage": "mass_production"
+    },
+    {
+      "id": "14",
+      "name": "HZB (亥姆霍兹柏林研究中心)",
+      "isPinned": "0",
+      "sortOrder": "999",
+      "stage": "research"
+    },
+    {
+      "id": "15",
+      "name": "EPFL (洛桑联邦理工学院)",
+      "isPinned": "0",
+      "sortOrder": "999",
+      "stage": "research"
+    },
+    {
+      "id": "16",
+      "name": "Swift Solar",
+      "isPinned": "0",
+      "sortOrder": "999",
+      "stage": "pilot"
+    },
+    {
+      "id": "17",
+      "name": "Tandem PV",
+      "isPinned": "0",
+      "sortOrder": "999",
+      "stage": "pilot"
+    },
+    {
+      "id": "18",
+      "name": "CubicPV",
+      "isPinned": "0",
+      "sortOrder": "999",
+      "stage": "research"
+    },
+    {
+      "id": "19",
+      "name": "BlueDot Photonics",
+      "isPinned": "0",
+      "sortOrder": "999",
+      "stage": "research"
+    },
+    {
+      "id": "20",
+      "name": "NREL (美国国家可再生能源实验室)",
+      "isPinned": "0",
+      "sortOrder": "999",
+      "stage": "research"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tisPinned\tsortOrder\tstage\n1\t协鑫光电 (GCL Perovskite)\t0\t999\tmass_production\n2\t纤纳光电 (Microquanta Semiconductor)\t0\t999\tmass_production\n3\t极电光能 (Jike Energy)\t0\t999\tmass_production\n4\t仁烁光能 (Renshine Solar)\t0\t999\tpilot\n5\t黑晶光电\t0\t999\tpilot\n6\t曜能光电 (Yaoneng Technology)\t0\t999\tpilot\n7\t北京曜能 (Beijing Yaoneng)\t0\t999\tresearch\n8\t隆基绿能 (LONGi Green Energy)\t0\t999\tmass_production\n9\t天合光能 (Trina Solar)\t0\t999\tresearch\n10\t晶科能源 (JinkoSolar)\t0\t999\tresearch\n11\tOxford PV\t0\t999\tmass_production\n12\tSaule Technologies\t0\t999\tmass_production\n13\tSolaronix\t0\t999\tmass_production\n14\tHZB (亥姆霍兹柏林研究中心)\t0\t999\tresearch\n15\tEPFL (洛桑联邦理工学院)\t0\t999\tresearch\n16\tSwift Solar\t0\t999\tpilot\n17\tTandem PV\t0\t999\tpilot\n18\tCubicPV\t0\t999\tresearch\n19\tBlueDot Photonics\t0\t999\tresearch\n20\tNREL (美国国家可再生能源实验室)\t0\t999\tresearch\n",
+  "stderr": "",
+  "execution_time_ms": 66
+}
