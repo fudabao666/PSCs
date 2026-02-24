@@ -49,5 +49,11 @@
 - [ ] Bulk import for manufacturer data
 - [ ] Bulk import for efficiency records
 - [ ] Full edit dialogs for news/tenders
-- [ ] Efficiency trend chart visualization
+- [x] Efficiency trend chart visualization (in progress)
 - [ ] Multi-language support (CN/EN)
+
+## Current Sprint
+- [x] Backend: efficiency.chartData API (time-series aggregation by cell type)
+- [x] Frontend: Recharts line chart in EfficiencyPage.tsx
+- [x] Seed sample efficiency data for chart demonstration (35 records, 2012-2024)
+- [x] Backend: efficiency.seed API for admin to initialize data

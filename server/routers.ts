@@ -10,6 +10,7 @@ import {
   deleteManufacturer,
   deleteNews,
   deleteTender,
+  getEfficiencyChartData,
   getEfficiencyRecords,
   getCurrentRecords,
   getLatestNews,
@@ -344,6 +345,56 @@ const efficiencyRouter = router({
     .query(({ input }) => getEfficiencyRecords(input.cellType)),
 
   current: publicProcedure.query(() => getCurrentRecords()),
+
+  chartData: publicProcedure.query(() => getEfficiencyChartData()),
+
+  seed: adminProcedure.mutation(async () => {
+    // Seed historical efficiency records for chart demonstration
+    const seedData = [
+      // Single junction perovskite
+      { cellType: "single_junction" as const, efficiency: "9.7",  institution: "EPFL",           recordDate: new Date("2012-06-01"), isCurrentRecord: false },
+      { cellType: "single_junction" as const, efficiency: "15.0", institution: "EPFL",           recordDate: new Date("2013-07-01"), isCurrentRecord: false },
+      { cellType: "single_junction" as const, efficiency: "17.9", institution: "KRICT",          recordDate: new Date("2014-08-01"), isCurrentRecord: false },
+      { cellType: "single_junction" as const, efficiency: "20.1", institution: "KRICT/UNIST",    recordDate: new Date("2015-06-01"), isCurrentRecord: false },
+      { cellType: "single_junction" as const, efficiency: "22.1", institution: "KRICT/UNIST",    recordDate: new Date("2016-10-01"), isCurrentRecord: false },
+      { cellType: "single_junction" as const, efficiency: "23.3", institution: "KRICT",          recordDate: new Date("2018-04-01"), isCurrentRecord: false },
+      { cellType: "single_junction" as const, efficiency: "25.2", institution: "KAUST",          recordDate: new Date("2019-11-01"), isCurrentRecord: false },
+      { cellType: "single_junction" as const, efficiency: "25.7", institution: "LONGi Green Energy", recordDate: new Date("2021-11-01"), isCurrentRecord: false },
+      { cellType: "single_junction" as const, efficiency: "26.1", institution: "KAUST",          recordDate: new Date("2023-03-01"), isCurrentRecord: false },
+      { cellType: "single_junction" as const, efficiency: "26.7", institution: "KAUST",          recordDate: new Date("2024-06-01"), isCurrentRecord: true  },
+      // Tandem perovskite/silicon
+      { cellType: "tandem_silicon" as const,   efficiency: "23.6", institution: "Helmholtz-Zentrum Berlin", recordDate: new Date("2016-11-01"), isCurrentRecord: false },
+      { cellType: "tandem_silicon" as const,   efficiency: "25.2", institution: "EPFL/CSEM",     recordDate: new Date("2018-01-01"), isCurrentRecord: false },
+      { cellType: "tandem_silicon" as const,   efficiency: "28.0", institution: "HZB",           recordDate: new Date("2020-03-01"), isCurrentRecord: false },
+      { cellType: "tandem_silicon" as const,   efficiency: "29.8", institution: "LONGi Green Energy", recordDate: new Date("2021-09-01"), isCurrentRecord: false },
+      { cellType: "tandem_silicon" as const,   efficiency: "31.25",institution: "KAUST",         recordDate: new Date("2022-11-01"), isCurrentRecord: false },
+      { cellType: "tandem_silicon" as const,   efficiency: "33.9", institution: "LONGi Green Energy", recordDate: new Date("2023-11-01"), isCurrentRecord: false },
+      { cellType: "tandem_silicon" as const,   efficiency: "34.6", institution: "KAUST",         recordDate: new Date("2024-09-01"), isCurrentRecord: true  },
+      // All-perovskite tandem
+      { cellType: "tandem_perovskite" as const,efficiency: "17.0", institution: "EPFL",          recordDate: new Date("2016-05-01"), isCurrentRecord: false },
+      { cellType: "tandem_perovskite" as const,efficiency: "20.3", institution: "Nanjing University", recordDate: new Date("2019-08-01"), isCurrentRecord: false },
+      { cellType: "tandem_perovskite" as const,efficiency: "24.2", institution: "Nanjing University", recordDate: new Date("2021-04-01"), isCurrentRecord: false },
+      { cellType: "tandem_perovskite" as const,efficiency: "26.4", institution: "Nanjing University", recordDate: new Date("2022-07-01"), isCurrentRecord: false },
+      { cellType: "tandem_perovskite" as const,efficiency: "28.0", institution: "Nanjing University", recordDate: new Date("2023-08-01"), isCurrentRecord: false },
+      { cellType: "tandem_perovskite" as const,efficiency: "29.1", institution: "Nanjing University", recordDate: new Date("2024-05-01"), isCurrentRecord: true  },
+      // Flexible
+      { cellType: "flexible" as const,         efficiency: "12.0", institution: "EPFL",          recordDate: new Date("2015-03-01"), isCurrentRecord: false },
+      { cellType: "flexible" as const,         efficiency: "16.0", institution: "KRICT",         recordDate: new Date("2017-06-01"), isCurrentRecord: false },
+      { cellType: "flexible" as const,         efficiency: "19.5", institution: "EPFL",          recordDate: new Date("2019-09-01"), isCurrentRecord: false },
+      { cellType: "flexible" as const,         efficiency: "21.4", institution: "KAUST",         recordDate: new Date("2021-03-01"), isCurrentRecord: false },
+      { cellType: "flexible" as const,         efficiency: "23.4", institution: "KAUST",         recordDate: new Date("2023-06-01"), isCurrentRecord: true  },
+      // Module
+      { cellType: "module" as const,           efficiency: "10.4", institution: "EPFL",          recordDate: new Date("2016-01-01"), isCurrentRecord: false },
+      { cellType: "module" as const,           efficiency: "12.1", institution: "Saule Technologies", recordDate: new Date("2018-06-01"), isCurrentRecord: false },
+      { cellType: "module" as const,           efficiency: "16.1", institution: "Panasonic",     recordDate: new Date("2020-01-01"), isCurrentRecord: false },
+      { cellType: "module" as const,           efficiency: "18.6", institution: "Microquanta",   recordDate: new Date("2022-03-01"), isCurrentRecord: false },
+      { cellType: "module" as const,           efficiency: "20.6", institution: "Microquanta",   recordDate: new Date("2024-01-01"), isCurrentRecord: true  },
+    ];
+    for (const record of seedData) {
+      await insertEfficiencyRecord(record);
+    }
+    return { success: true, count: seedData.length };
+  }),
 
   create: adminProcedure
     .input(

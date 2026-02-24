@@ -257,6 +257,26 @@ export async function insertEfficiencyRecord(data: InsertEfficiencyRecord) {
   return db.insert(efficiencyRecords).values(data);
 }
 
+/**
+ * Returns time-series data for chart: each row has recordDate, efficiency, cellType.
+ * Sorted ascending by date so charts render left-to-right.
+ */
+export async function getEfficiencyChartData() {
+  const db = await getDb();
+  if (!db) return [];
+  const rows = await db
+    .select({
+      id: efficiencyRecords.id,
+      cellType: efficiencyRecords.cellType,
+      efficiency: efficiencyRecords.efficiency,
+      recordDate: efficiencyRecords.recordDate,
+      institution: efficiencyRecords.institution,
+    })
+    .from(efficiencyRecords)
+    .orderBy(efficiencyRecords.recordDate);
+  return rows;
+}
+
 // ─── Global Search ────────────────────────────────────────────────────────────
 
 export async function globalSearch(keyword: string, limit = 10) {

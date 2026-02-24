@@ -14,6 +14,7 @@ vi.mock("./db", () => ({
   getManufacturerById: vi.fn().mockResolvedValue(null),
   getEfficiencyRecords: vi.fn().mockResolvedValue([]),
   getCurrentRecords: vi.fn().mockResolvedValue([]),
+  getEfficiencyChartData: vi.fn().mockResolvedValue([]),
   getSiteStats: vi.fn().mockResolvedValue({ newsCount: 0, tenderCount: 0, manufacturerCount: 0, efficiencyCount: 0, lastUpdated: new Date() }),
   globalSearch: vi.fn().mockResolvedValue({ news: [], tenders: [], manufacturers: [] }),
   insertNews: vi.fn().mockResolvedValue(undefined),
@@ -136,6 +137,25 @@ describe("efficiency router", () => {
     const caller = appRouter.createCaller(createPublicContext());
     const result = await caller.efficiency.current();
     expect(Array.isArray(result)).toBe(true);
+  });
+
+  it("chartData returns array for public users", async () => {
+    const caller = appRouter.createCaller(createPublicContext());
+    const result = await caller.efficiency.chartData();
+    expect(Array.isArray(result)).toBe(true);
+  });
+
+  it("seed is admin-only", async () => {
+    const caller = appRouter.createCaller(createPublicContext());
+    await expect(caller.efficiency.seed()).rejects.toThrow();
+  });
+
+  it("admin can seed efficiency records", async () => {
+    const caller = appRouter.createCaller(createAdminContext());
+    const result = await caller.efficiency.seed();
+    expect(result).toHaveProperty("success", true);
+    expect(result).toHaveProperty("count");
+    expect(typeof result.count).toBe("number");
   });
 });
 
