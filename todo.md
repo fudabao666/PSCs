@@ -66,3 +66,6 @@
 - [x] Frontend: Recharts line chart in EfficiencyPage.tsx
 - [x] Seed sample efficiency data for chart demonstration (35 records, 2012-2024)
 - [x] Backend: efficiency.seed API for admin to initialize data
+
+## Sprint 3 - 品牌标识更新
+- [x] 首页及导航栏名称添加"鹑火FL内刊"副标题

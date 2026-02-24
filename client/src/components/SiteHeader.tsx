@@ -34,6 +34,10 @@ export default function SiteHeader() {
             <span className="font-sans text-[10px] tracking-[0.2em] uppercase text-ink-muted">
               全球钙钛矿光伏行业资讯平台
             </span>
+            <span className="text-foreground/20">·</span>
+            <span className="font-sans text-[10px] tracking-[0.15em] text-foreground/40 font-medium">
+              鹑火FL内刊
+            </span>
             <span className="text-foreground/20">|</span>
             <span className="font-sans text-[10px] tracking-[0.15em] uppercase text-ink-muted">
               {new Date().toLocaleDateString("zh-CN", { year: "numeric", month: "long", day: "numeric", weekday: "long" })}
@@ -64,12 +68,19 @@ export default function SiteHeader() {
           {/* Logo */}
           <Link href="/" className="flex-shrink-0">
             <div className="flex flex-col">
-              <span
-                className="font-display text-2xl md:text-3xl font-black tracking-tight leading-none text-foreground"
-                style={{ fontFamily: "var(--font-display)" }}
-              >
-                钙钛矿
-              </span>
+              <div className="flex items-baseline gap-2">
+                <span
+                  className="font-display text-2xl md:text-3xl font-black tracking-tight leading-none text-foreground"
+                  style={{ fontFamily: "var(--font-display)" }}
+                >
+                  钙钛矿
+                </span>
+                <span
+                  className="font-sans text-[10px] tracking-[0.2em] text-foreground/50 border border-foreground/30 px-1.5 py-0.5 whitespace-nowrap"
+                >
+                  鹑火FL内刊
+                </span>
+              </div>
               <span
                 className="font-display text-2xl md:text-3xl font-black tracking-tight leading-none text-foreground"
                 style={{ fontFamily: "var(--font-display)" }}
