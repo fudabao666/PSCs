@@ -85,6 +85,8 @@ export const manufacturers = mysqlTable("manufacturers", {
   capacity: varchar("capacity", { length: 256 }), // production capacity
   latestNews: text("latestNews"),
   isActive: boolean("isActive").default(true).notNull(),
+  isPinned: boolean("isPinned").default(false).notNull(), // pinned companies appear first
+  sortOrder: int("sortOrder").default(999).notNull(), // lower = higher priority
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

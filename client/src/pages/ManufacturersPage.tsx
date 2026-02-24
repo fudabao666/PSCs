@@ -115,8 +115,17 @@ export default function ManufacturersPage() {
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {data?.items.map((mfg) => (
                 <Link key={mfg.id} href={`/manufacturers/${mfg.id}`}
-                  className="group bg-card border border-foreground/10 p-5 hover:border-foreground/40 hover:shadow-sm transition-all">
-                  <div className="flex items-start justify-between mb-3">
+                  className={`group bg-card p-5 hover:shadow-sm transition-all relative ${
+                    mfg.isPinned
+                      ? "border-2 border-amber-400/60 hover:border-amber-500/80 shadow-amber-100/50 shadow-sm"
+                      : "border border-foreground/10 hover:border-foreground/40"
+                  }`}>
+                  {mfg.isPinned && (
+                    <div className="absolute top-0 left-0 bg-amber-400 text-white font-sans text-[8px] tracking-widest uppercase px-2 py-0.5 font-semibold">
+                      鹑火FL
+                    </div>
+                  )}
+                  <div className={`flex items-start justify-between mb-3 ${mfg.isPinned ? "mt-4" : ""}`}>
                     <div className="w-9 h-9 bg-foreground/5 flex items-center justify-center border border-foreground/10">
                       {mfg.logoUrl ? (
                         <img src={mfg.logoUrl} alt={mfg.name} className="w-full h-full object-contain p-1" />

@@ -207,7 +207,7 @@ export async function getManufacturerList(opts: {
   if (keyword) conditions.push(or(like(manufacturers.name, `%${keyword}%`), like(manufacturers.description, `%${keyword}%`))!);
   const where = and(...conditions);
   const [items, countResult] = await Promise.all([
-    db.select().from(manufacturers).where(where).orderBy(manufacturers.name).limit(pageSize).offset((page - 1) * pageSize),
+    db.select().from(manufacturers).where(where).orderBy(desc(manufacturers.isPinned), manufacturers.sortOrder, manufacturers.name).limit(pageSize).offset((page - 1) * pageSize),
     db.select({ count: sql<number>`count(*)` }).from(manufacturers).where(where),
   ]);
   return { items, total: Number(countResult[0]?.count ?? 0) };

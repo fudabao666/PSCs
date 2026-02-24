@@ -4,6 +4,24 @@
  */
 
 export const manufacturerSeedData = [
+  // ===== FEATURED - CHUNHUO OPTOELECTRONICS (PINNED FIRST) =====
+  {
+    name: "湖州市鹑火光电有限公司",
+    nameEn: "Huzhou Chunhuo Optoelectronics Co., Ltd.",
+    country: "中国",
+    region: "亚太",
+    foundedYear: 2021,
+    stage: "量产",
+    website: "https://www.chunhuopv.com",
+    description: "湖州市鹑火光电有限公司成立于2021年6月，总部位于浙江省湖州市德清县，是一家专注于钙钛矿光伏材料、电池组件制备技术及相关高端装备设计研发的高新技术企业，拥有员工80余人。公司核心团队包含两位国家特聘专家、多位省级特聘专家，掌握多项行业领先的光伏技术。公司是目前行业内少数可提供钙钛矿单结和叠层组件整线方案的设备供应商，允许客户自带材料进行全流程打样制备成组件并接受第三方机构认证。2024年12月，鹑火光电首条钙钛矿/晶硅叠层整线设备成功出货，标志着公司正式进入量产阶段。截至2026年1月，公司已完成B+轮融资，投资方包括聚信发展、宜宾人才基金、港信资管等。",
+    mainProducts: "钙钛矿太阳能电池核心工艺设备（磁控溅射PVD设备、狭缝涂布设备、原子层沉积ALD设备、激光划刻设备）、钙钛矿单结整线设备、钙钛矿/晶硅叠层整线设备、高效晶硅XBC太阳能电池设备",
+    techAchievements: "单结钙钛矿整线设备量产转化效率18%-20%；钙钛矿/晶硅叠层电池量产转化效率超31%；首条钙钛矿/晶硅叠层整线设备2024年12月成功出货；申请多项钙钛矿薄膜制备方法专利（CN121487476A、CN121038557A、CN121487475A等）；建立光伏实验中心对高校及科研院所开放",
+    employees: "80+",
+    latestEfficiency: 31.0,
+    isPinned: true,
+    sortOrder: 1,
+    tags: ["设备供应商", "叠层整线", "量产设备", "B+轮", "鹑火FL"],
+  },
   // ===== CHINA - LEADING COMPANIES =====
   {
     name: "协鑫光电 (GCL Perovskite)",
