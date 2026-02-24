@@ -103,3 +103,10 @@
 - [x] 更新db.ts排序逻辑：优先按isPinned降序、sortOrder升序、名称升序
 - [x] 厂家卡片添加鹑火FL金色标签和特殊边框视觉标识
 - [x] 20个测试全部通过
+
+## Sprint 8 - 招投标来源网址必填
+- [x] 管理后台新增招投标对话框：sourceUrl设为必填（红色边框+错误提示+按钒禁用）
+- [x] 管理后台编辑招投标对话框：sourceUrl设为必填（红色边框+错误提示+按钒禁用）
+- [x] 后端tenders.create：sourceUrl设为必填（Zod min(1)+url验证）
+- [x] 后端tenders.update：sourceUrl如提供则必须为有效URL（Zod url验证）
+- [x] 20个测试全部通过，TypeScript零错误

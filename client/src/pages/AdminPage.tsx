@@ -531,13 +531,20 @@ function TendersManageTab() {
                 <Input value={editItem.budget} onChange={(e) => setEditItem({ ...editItem, budget: e.target.value })} placeholder="如：500万元" />
               </div>
               <div>
-                <label className="font-sans text-xs text-ink-muted mb-1 block font-semibold text-foreground">来源网站链接 <span className="text-blue-600">(sourceUrl)</span></label>
+                <label className="font-sans text-xs mb-1 flex items-center gap-1 font-semibold text-foreground">
+                  来源网站链接 <span className="text-blue-600">(sourceUrl)</span>
+                  <span className="text-red-500 font-bold">*</span>
+                  <span className="text-red-500 text-[10px] font-normal ml-1">必填</span>
+                </label>
                 <Input
                   value={editItem.sourceUrl}
                   onChange={(e) => setEditItem({ ...editItem, sourceUrl: e.target.value })}
-                  placeholder="https://..."
-                  className="font-mono text-xs"
+                  placeholder="https://（必填，填写招标信息原始来源网址）"
+                  className={`font-mono text-xs ${!editItem.sourceUrl ? "border-red-400 focus-visible:ring-red-400" : ""}`}
                 />
+                {!editItem.sourceUrl && (
+                  <p className="mt-1 font-sans text-[10px] text-red-500">请填写信息来源网址，便于溯源核实</p>
+                )}
                 {editItem.sourceUrl && (
                   <a href={editItem.sourceUrl} target="_blank" rel="noopener noreferrer"
                     className="mt-1 flex items-center gap-1 font-sans text-xs text-blue-600 hover:underline">
@@ -585,7 +592,7 @@ function TendersManageTab() {
           )}
           <DialogFooter>
             <Button variant="outline" size="sm" onClick={() => setEditItem(null)}>取消</Button>
-            <Button size="sm" disabled={updateTender.isPending} onClick={() => editItem && updateTender.mutate({
+            <Button size="sm" disabled={updateTender.isPending || !editItem?.sourceUrl} onClick={() => editItem && updateTender.mutate({
               id: editItem.id,
               title: editItem.title,
               sourceUrl: editItem.sourceUrl || undefined,
@@ -597,7 +604,7 @@ function TendersManageTab() {
               projectType: editItem.projectType,
               isImportant: editItem.isImportant,
             })} className="flex items-center gap-1.5">
-              <Save size={12} /> {updateTender.isPending ? "保存中..." : "保存更改"}
+              <Save size={12} /> {updateTender.isPending ? "保存中..." : (!editItem?.sourceUrl ? "请填写来源网址" : "保存更改")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -629,8 +636,26 @@ function TendersManageTab() {
               </div>
             </div>
             <div>
-              <label className="font-sans text-xs text-ink-muted mb-1 block font-semibold text-foreground">来源网站链接 <span className="text-blue-600">(sourceUrl)</span></label>
-              <Input value={addForm.sourceUrl} onChange={(e) => setAddForm({ ...addForm, sourceUrl: e.target.value })} placeholder="https://..." className="font-mono text-xs" />
+              <label className="font-sans text-xs mb-1 flex items-center gap-1 font-semibold text-foreground">
+                来源网站链接 <span className="text-blue-600">(sourceUrl)</span>
+                <span className="text-red-500 font-bold">*</span>
+                <span className="text-red-500 text-[10px] font-normal ml-1">必填</span>
+              </label>
+              <Input
+                value={addForm.sourceUrl}
+                onChange={(e) => setAddForm({ ...addForm, sourceUrl: e.target.value })}
+                placeholder="https://（必填，填写招标信息原始来源网址）"
+                className={`font-mono text-xs ${!addForm.sourceUrl ? "border-red-400 focus-visible:ring-red-400" : ""}`}
+              />
+              {!addForm.sourceUrl && (
+                <p className="mt-1 font-sans text-[10px] text-red-500">请填写信息来源网址，便于溯源核实</p>
+              )}
+              {addForm.sourceUrl && (
+                <a href={addForm.sourceUrl} target="_blank" rel="noopener noreferrer"
+                  className="mt-1 flex items-center gap-1 font-sans text-xs text-blue-600 hover:underline">
+                  <ExternalLink size={10} /> 验证链接是否有效
+                </a>
+              )}
             </div>
             <div>
               <label className="font-sans text-xs text-ink-muted mb-1 block">来源平台名称</label>
@@ -660,8 +685,8 @@ function TendersManageTab() {
           </div>
           <DialogFooter>
             <Button variant="outline" size="sm" onClick={() => setShowAdd(false)}>取消</Button>
-            <Button size="sm" disabled={createTender.isPending || !addForm.title} onClick={() => createTender.mutate(addForm)} className="flex items-center gap-1.5">
-              <Plus size={12} /> {createTender.isPending ? "添加中..." : "确认添加"}
+            <Button size="sm" disabled={createTender.isPending || !addForm.title || !addForm.sourceUrl} onClick={() => createTender.mutate(addForm)} className="flex items-center gap-1.5">
+              <Plus size={12} /> {createTender.isPending ? "添加中..." : (!addForm.sourceUrl ? "请填写来源网址" : "确认添加")}
             </Button>
           </DialogFooter>
         </DialogContent>
