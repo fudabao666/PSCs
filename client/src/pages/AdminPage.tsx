@@ -121,10 +121,19 @@ function DataUpdateTab() {
       toast.success(`数据更新完成：新增 ${data.newsCount} 条新闻，${data.tenderCount} 条招投标信息`);
       utils.news.latest.invalidate();
       utils.tenders.latest.invalidate();
+      utils.dataFetch.jobLogs.invalidate();
     },
     onError: (err: { message: string }) => toast.error(`更新失败：${err.message}`),
   });
-
+  const triggerTenders = trpc.dataFetch.triggerTendersOnly.useMutation({
+    onSuccess: (data) => {
+      toast.success(`招投标抓取完成：新增 ${data.tenderCount} 条招投标信息`);
+      utils.tenders.latest.invalidate();
+      utils.dataFetch.jobLogs.invalidate();
+    },
+    onError: (err: { message: string }) => toast.error(`抓取失败：${err.message}`),
+  });
+  const { data: jobLogsData, isLoading: logsLoading } = trpc.dataFetch.jobLogs.useQuery({ limit: 15 });
   const seedManufacturers = trpc.manufacturers.seed.useMutation({
     onSuccess: (res) => {
       toast.success(`成功写入 ${res.count} 家全球主要钙钛矿企业数据`);
@@ -132,7 +141,6 @@ function DataUpdateTab() {
     },
     onError: (err) => toast.error(`厂家初始化失败：${err.message}`),
   });
-
   const seedEfficiency = trpc.efficiency.seed.useMutation({
     onSuccess: (res) => {
       toast.success(`成功写入 ${res.count} 条权威效率历史记录（NREL等来源）`);
@@ -143,27 +151,106 @@ function DataUpdateTab() {
     onError: (err) => toast.error(`效率数据初始化失败：${err.message}`),
   });
 
+  const statusColor = (status: string) => {
+    if (status === 'success') return 'text-green-600';
+    if (status === 'failed') return 'text-red-500';
+    return 'text-yellow-500';
+  };
+  const statusLabel = (status: string) => {
+    if (status === 'success') return '成功';
+    if (status === 'failed') return '失败';
+    return '运行中';
+  };
+  const jobTypeLabel = (type: string) => {
+    if (type === 'manual_fetch') return '手动全量抓取';
+    if (type === 'manual_fetch_tenders') return '手动招投标抓取';
+    if (type === 'scheduled_fetch') return '定时自动抓取';
+    return type;
+  };
+
   return (
-    <div className="max-w-2xl space-y-8">
+    <div className="max-w-3xl space-y-8">
       <div>
         <h2 className="font-sans text-[10px] tracking-[0.2em] uppercase text-ink-muted font-semibold mb-4">
           自动数据更新
         </h2>
         <div className="bg-muted p-6 space-y-4">
           <p className="font-sans text-sm text-foreground">
-            点击下方按钮手动触发数据更新。系统将通过 AI 自动生成最新的行业新闻和招投标信息。
+            系统每天 <strong>08:00（北京时间）</strong> 自动从采招网、北极星光伏网、全国公共资源交易平台等多个来源抓取最新钙钛矿招投标信息，并通过 AI 智能解析入库，自动去重。
           </p>
           <p className="font-sans text-xs text-ink-muted">
-            注意：自动更新任务每天 08:00 自动执行，无需手动触发。
+            抓取来源：采招网 · 北极星光伏网 · 全国公共资源交易平台 · 索比光伏网 · 中国电建阳光采购平台
           </p>
-          <Button
-            onClick={() => triggerFetch.mutate()}
-            disabled={triggerFetch.isPending}
-            className="flex items-center gap-2"
-          >
-            <RefreshCw size={14} className={triggerFetch.isPending ? "animate-spin" : ""} />
-            {triggerFetch.isPending ? "更新中..." : "立即更新新闻与招投标数据"}
-          </Button>
+          <div className="flex flex-wrap gap-3">
+            <Button
+              onClick={() => triggerFetch.mutate()}
+              disabled={triggerFetch.isPending || triggerTenders.isPending}
+              className="flex items-center gap-2"
+            >
+              <RefreshCw size={14} className={triggerFetch.isPending ? "animate-spin" : ""} />
+              {triggerFetch.isPending ? "抓取中..." : "立即抓取新闻与招投标"}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => triggerTenders.mutate()}
+              disabled={triggerFetch.isPending || triggerTenders.isPending}
+              className="flex items-center gap-2 bg-transparent"
+            >
+              <RefreshCw size={14} className={triggerTenders.isPending ? "animate-spin" : ""} />
+              {triggerTenders.isPending ? "抓取中..." : "仅抓取招投标信息"}
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 className="font-sans text-[10px] tracking-[0.2em] uppercase text-ink-muted font-semibold mb-4">
+          抓取日志
+        </h2>
+        <div className="bg-muted p-6">
+          {logsLoading ? (
+            <p className="font-sans text-sm text-ink-muted">加载中...</p>
+          ) : !jobLogsData || jobLogsData.length === 0 ? (
+            <p className="font-sans text-sm text-ink-muted">暂无抓取记录，点击上方按钮触发首次抓取</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full font-sans text-xs">
+                <thead>
+                  <tr className="border-b border-border">
+                    <th className="text-left py-2 pr-4 text-ink-muted font-semibold">时间</th>
+                    <th className="text-left py-2 pr-4 text-ink-muted font-semibold">类型</th>
+                    <th className="text-left py-2 pr-4 text-ink-muted font-semibold">状态</th>
+                    <th className="text-left py-2 pr-4 text-ink-muted font-semibold">新增条数</th>
+                    <th className="text-left py-2 text-ink-muted font-semibold">耗时</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {jobLogsData.map((log) => {
+                    const duration = log.completedAt && log.startedAt
+                      ? Math.round((new Date(log.completedAt).getTime() - new Date(log.startedAt).getTime()) / 1000)
+                      : null;
+                    return (
+                      <tr key={log.id} className="border-b border-border/50 hover:bg-background/50">
+                        <td className="py-2 pr-4 text-ink-muted">
+                          {new Date(log.startedAt).toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                        </td>
+                        <td className="py-2 pr-4">{jobTypeLabel(log.jobType)}</td>
+                        <td className={`py-2 pr-4 font-semibold ${statusColor(log.status)}`}>
+                          {statusLabel(log.status)}
+                        </td>
+                        <td className="py-2 pr-4">
+                          {log.itemsProcessed != null ? `+${log.itemsProcessed}` : '-'}
+                        </td>
+                        <td className="py-2 text-ink-muted">
+                          {duration != null ? `${duration}s` : log.status === 'running' ? '进行中' : '-'}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
 

@@ -29,6 +29,7 @@ vi.mock("./db", () => ({
   deleteManufacturer: vi.fn().mockResolvedValue(undefined),
   createJobLog: vi.fn().mockResolvedValue(1),
   updateJobLog: vi.fn().mockResolvedValue(undefined),
+  getRecentJobLogs: vi.fn().mockResolvedValue([]),
   upsertUser: vi.fn().mockResolvedValue(undefined),
   getUserByOpenId: vi.fn().mockResolvedValue(undefined),
   getResearchPapers: vi.fn().mockResolvedValue({ items: [], total: 0 }),
@@ -212,6 +213,29 @@ describe("admin access control", () => {
     const caller = appRouter.createCaller(createAdminContext());
     const result = await caller.news.create({ title: "钙钛矿新技术突破" });
     expect(result).toHaveProperty("success", true);
+  });
+});
+
+describe("dataFetch router - new routes", () => {
+  it("non-admin cannot view job logs", async () => {
+    const caller = appRouter.createCaller(createUserContext());
+    await expect(caller.dataFetch.jobLogs({ limit: 10 })).rejects.toThrow();
+  });
+  it("admin can view job logs", async () => {
+    const caller = appRouter.createCaller(createAdminContext());
+    const result = await caller.dataFetch.jobLogs({ limit: 10 });
+    expect(Array.isArray(result)).toBe(true);
+  });
+  it("non-admin cannot trigger tenders-only fetch", async () => {
+    const caller = appRouter.createCaller(createUserContext());
+    await expect(caller.dataFetch.triggerTendersOnly()).rejects.toThrow();
+  });
+  it("admin can trigger tenders-only fetch", async () => {
+    const caller = appRouter.createCaller(createAdminContext());
+    const result = await caller.dataFetch.triggerTendersOnly();
+    expect(result).toHaveProperty("success", true);
+    expect(result).toHaveProperty("tenderCount");
+    expect(typeof result.tenderCount).toBe("number");
   });
 });
 

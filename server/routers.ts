@@ -42,6 +42,7 @@ import {
   updateTender,
   createJobLog,
   updateJobLog,
+  getRecentJobLogs,
 } from "./db";
 import { fetchLatestNews, fetchLatestTenders } from "./dataFetcher";
 import { manufacturerSeedData } from "./seedManufacturers";
@@ -501,7 +502,6 @@ const statsRouter = router({
 });
 
 // ─── Data Fetch Router (Admin) ────────────────────────────────────────────────
-
 const dataFetchRouter = router({
   triggerFetch: adminProcedure.mutation(async () => {
     const jobId = await createJobLog("manual_fetch");
@@ -516,6 +516,22 @@ const dataFetchRouter = router({
         content: `手动触发数据更新完成：新增新闻 ${newsCount} 条，招投标信息 ${tenderCount} 条`,
       });
       return { success: true, newsCount, tenderCount };
+    } catch (err) {
+      if (jobId) await updateJobLog(jobId, "failed", 0, String(err));
+      throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: String(err) });
+    }
+  }),
+  jobLogs: adminProcedure
+    .input(z.object({ limit: z.number().min(1).max(100).default(20) }))
+    .query(async ({ input }) => {
+      return getRecentJobLogs(input.limit);
+    }),
+  triggerTendersOnly: adminProcedure.mutation(async () => {
+    const jobId = await createJobLog("manual_fetch_tenders");
+    try {
+      const tenderCount = await fetchLatestTenders();
+      if (jobId) await updateJobLog(jobId, "success", tenderCount);
+      return { success: true, tenderCount };
     } catch (err) {
       if (jobId) await updateJobLog(jobId, "failed", 0, String(err));
       throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: String(err) });

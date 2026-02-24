@@ -124,3 +124,11 @@
 - [ ] 确保前端新闻列表和详情页展示来源链接
 - [ ] 用真实资讯替换数据库示例数据
 - [ ] 保存检查点
+## Sprint 11 - 每日定时自动抓取招投标信息
+- [x] 重写dataFetcher.ts：真实HTTP抓取采招网+北极星光伏网+中国电建，LLM智能解析，附带来源URL
+- [x] db.ts添加getRecentJobLogs函数
+- [x] routers.ts添加jobLogs查询路由和triggerTendersOnly独立触发路由（admin）
+- [x] 验证scheduler.ts定时任务正确集成新抓取逻辑
+- [x] 前端管理后台：数据更新Tab展示抓取日志列表（时间/状态/新增数量）
+- [x] 前端管理后台：手动触发抓取按钮带实时进度反馈
+- [x] 编写测试并验证（24个测试全部通过）

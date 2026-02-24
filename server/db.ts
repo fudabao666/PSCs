@@ -309,6 +309,12 @@ export async function updateJobLog(id: number, status: "success" | "failed", ite
   await db.update(jobLogs).set({ status, itemsProcessed, errorMessage, completedAt: new Date() }).where(eq(jobLogs.id, id));
 }
 
+export async function getRecentJobLogs(limit = 20) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(jobLogs).orderBy(desc(jobLogs.startedAt)).limit(limit);
+}
+
 // ─── Stats ────────────────────────────────────────────────────────────────────
 
 export async function getSiteStats() {
